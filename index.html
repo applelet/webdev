@@ -990,6 +990,34 @@
     line-height: 1.4;
 }
 
+
+@media print {
+    .code-container {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        overflow: visible !important;        /* important */
+    }
+
+    .code-block {
+        display: block !important;           /* kill the flex */
+        overflow: visible !important;
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+    }
+
+    .code-content,
+    .line-numbers {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        overflow: visible !important;
+    }
+
+    /* optional but recommended – keep each logical line together */
+    .code-content {
+        white-space: pre-wrap !important;
+    }
+}
+        
     </style>
 </head>
 <body>
