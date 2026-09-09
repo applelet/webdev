@@ -1,0 +1,3596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSIGNMENT 1</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;600;700;800&family=Lato:wght@400;700;900&family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=Source+Sans+3:wght@400;600;700;900&family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800;900&family=Merriweather:wght@400;700;900&family=Playfair+Display:wght@400;700;900&family=Oswald:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans:wght@400;500;600;700;800;900&family=Work+Sans:wght@400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Crimson+Text:wght@400;600;700&family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Ubuntu+Mono:wght@400;700&family=Roboto+Mono:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========== PRINT SETTINGS - DYNAMIC MARGINS ========== */
+        @page {
+            size: A4 portrait;
+            margin: 12mm 14mm 12mm 14mm; /* default, overridden by JS */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body { 
+            height: auto; 
+            background: #e8e8e8;
+        }
+
+        body {
+            font-family: "Roboto", "Aptos", "Calibri", Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.35;
+            color: #000;
+            padding: 15px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px auto;
+            background: #fff;
+            padding: 11mm 13mm;
+            box-shadow: 0 0 12px rgba(0,0,0,0.18);
+            position: relative;
+            box-sizing: border-box;
+            transition: padding 0.3s;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .page:last-child {
+            margin-bottom: 0;
+            page-break-after: auto;
+            break-after: auto;
+        }
+
+        /* ========== PAGE BREAK STYLES ========== */
+        .page-break-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            margin: 10px 0;
+            border: 2px dashed #c62828;
+            border-radius: 4px;
+            background: #fff5f5;
+            color: #c62828;
+            font-weight: 700;
+            font-size: 10pt;
+            letter-spacing: 2px;
+            font-family: "Roboto", Arial, sans-serif;
+            text-transform: uppercase;
+            user-select: none;
+            cursor: default;
+            position: relative;
+        }
+        .page-break-indicator span {
+            padding: 0 12px;
+            white-space: nowrap;
+        }
+
+        /* ========== PAGE BREAK IN PRINT ========== */
+        .print-page-break {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        /* Page break wrapper - hides indicator in print, shows break */
+        .page-break-wrapper {
+            display: block;
+        }
+        .page-break-wrapper .page-break-indicator {
+            display: flex;
+        }
+        .page-break-wrapper .page-break-spacer {
+            display: none;
+        }
+
+        @media print {
+            .page-break-wrapper .page-break-indicator {
+                display: none !important;
+            }
+            .page-break-wrapper .page-break-spacer {
+                display: block !important;
+                page-break-after: always;
+                break-after: page;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                visibility: hidden !important;
+                overflow: hidden !important;
+            }
+            .page-break-wrapper {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        /* ========== TOOLBAR ========== */
+        .toolbar {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            font-family: "Roboto", Arial, sans-serif;
+            font-size: 11px;
+            min-width: 200px;
+            max-width: 95vw;
+            max-height: 85vh;
+            overflow: auto;
+            resize: both;
+            user-select: none;
+            box-sizing: border-box;
+            border: 2px solid #333;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        .toolbar.context-active {
+            border-color: #4caf50;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+        .toolbar::-webkit-resizer {
+            background: linear-gradient(135deg, transparent 60%, #666 60%);
+            width: 14px;
+            height: 14px;
+        }
+
+        .drag-handle {
+            width: 100%;
+            height: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            cursor: grab;
+            border-radius: 4px;
+            background: #2a2a2a;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+        }
+        .drag-handle:active { cursor: grabbing; background: #333; }
+        .drag-handle span { display: block; width: 20px; height: 2px; background: #555; border-radius: 1px; }
+        .toolbar.dragging { opacity: 0.92; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            padding: 2px 0;
+        }
+        .toolbar-row-label {
+            font-size: 8px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            min-width: 45px;
+            flex-shrink: 0;
+        }
+
+        .toolbar button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            flex-shrink: 0;
+            white-space: nowrap;
+            transition: all 0.2s;
+            height: 24px;
+        }
+        .toolbar button:hover { background: #1b5e20; transform: scale(1.02); }
+        .toolbar button.secondary { background: #1565c0; }
+        .toolbar button.secondary:hover { background: #0d47a1; }
+        .toolbar button.danger { background: #c62828; }
+        .toolbar button.danger:hover { background: #b71c1c; }
+        .toolbar button.context-btn {
+            background: #6a1b9a;
+            display: none;
+        }
+        .toolbar button.context-btn.active { display: inline-block; }
+        .toolbar button.context-btn:hover { background: #4a148c; }
+        .toolbar .status {
+            font-size: 9px;
+            color: #888;
+            margin-right: 2px;
+            padding: 2px 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+        .toolbar .context-hint {
+            font-size: 8px;
+            color: #4caf50;
+            padding: 2px 6px;
+            background: #1e3a1e;
+            border-radius: 3px;
+            display: none;
+            font-weight: 500;
+        }
+        .toolbar .context-hint.active { display: inline-block; }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            background: #2a2a2a;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            flex-shrink: 0;
+        }
+        .ctrl-group label { font-size: 8px; color: #aaa; white-space: nowrap; }
+        .ctrl-group select {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+            padding: 1px 3px;
+            font-size: 9px;
+            cursor: pointer;
+            max-width: 90px;
+            height: 20px;
+        }
+        .ctrl-group select:focus { outline: 1px solid #4caf50; }
+
+        .ctrl-group input[type="checkbox"] {
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            accent-color: #4caf50;
+            margin: 0;
+        }
+
+        .ctrl-group input[type="number"] {
+            width: 32px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+            padding: 1px 2px;
+            font-size: 9px;
+            height: 18px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: #2a2a2a;
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .zoom-controls button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 0 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            height: 18px;
+            min-width: 18px;
+        }
+        .zoom-controls button:hover { background: #666; }
+        .zoom-controls .zoom-level {
+            font-size: 9px;
+            color: #ccc;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .weight-controls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: #2a2a2a;
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .weight-controls button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 0 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 600;
+            height: 18px;
+        }
+        .weight-controls button:hover { background: #666; }
+        .weight-controls button.active-weight { background: #4caf50; }
+
+        /* ========== GAP SLIDER STYLES ========== */
+        .ctrl-group input[type="radio"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .ctrl-group input[type="radio"]:checked {
+            border-color: #4caf50;
+            background: #4caf50;
+            box-shadow: inset 0 0 0 2px #1a1a1a;
+        }
+
+        .ctrl-group input[type="radio"]:hover {
+            border-color: #888;
+        }
+
+        .ctrl-group input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #444;
+            height: 3px;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            padding: 0;
+            margin: 0 4px;
+        }
+
+        .ctrl-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            border: none;
+        }
+
+        .ctrl-group input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            border: none;
+        }
+
+        .ctrl-group input[type="range"].mode-section::-webkit-slider-thumb { background: #1565c0 !important; }
+        .ctrl-group input[type="range"].mode-heading::-webkit-slider-thumb { background: #6a1b9a !important; }
+        .ctrl-group input[type="range"].mode-paragraph::-webkit-slider-thumb { background: #2e7d32 !important; }
+        .ctrl-group input[type="range"].mode-section::-moz-range-thumb { background: #1565c0 !important; }
+        .ctrl-group input[type="range"].mode-heading::-moz-range-thumb { background: #6a1b9a !important; }
+        .ctrl-group input[type="range"].mode-paragraph::-moz-range-thumb { background: #2e7d32 !important; }
+
+        /* ========== EDIT MODE ========== */
+        [contenteditable="true"] {
+            outline: 1.5px dashed transparent;
+            transition: outline 0.15s, background 0.15s;
+        }
+        [contenteditable="true"]:hover {
+            outline: 1.5px dashed #2e7d32;
+            background: #f4faf4;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px solid #2e7d32;
+            background: #eef8ee;
+        }
+        .edit-mode [contenteditable="true"] { outline: 1px dashed #bbb; }
+
+        /* ========== TYPOGRAPHY BASE ========== */
+        .header {
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .section-title {
+            text-transform: uppercase;
+            margin-top: 12px;
+            margin-bottom: 0 !important;
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 6px;
+        }
+
+        .section-title + .problem-statement,
+        .section-title + .algorithm,
+        .section-title + .code-container,
+        .section-title + .io-table,
+        .section-title + .discussion {
+            margin-top: 0px !important;
+        }
+
+        .problem-statement {
+            margin-bottom: 0px;
+            line-height: 1.35;
+            font-weight: 400;
+        }
+
+        .algorithm {
+            line-height: 1.38;
+            white-space: pre-wrap !important;
+            margin-bottom: 0px;
+            padding: 4px 0;
+            background: transparent;
+            border: none;
+            font-weight: 400;
+        }
+
+        .code-content, .line-numbers {
+            font-family: "Google Sans Code", Consolas, "Courier New", monospace !important;
+            font-weight: 400;
+        }
+
+        .discussion {
+            line-height: 1.38;
+            text-align: justify;
+            font-weight: 400;
+        }
+        .discussion p { 
+            margin-top: 2px; 
+            margin-bottom: 0 !important;
+        }
+        .discussion p:first-child { margin-top: 0 !important; }
+        .discussion p + p { margin-top: 2px; }
+
+        .problem-statement p { 
+            margin-top: 2px; 
+            margin-bottom: 0 !important;
+        }
+        .problem-statement p:first-child { margin-top: 0 !important; }
+        .problem-statement p + p { margin-top: 2px; }
+
+        .io-table td {
+            font-weight: 400;
+            word-wrap: break-word;
+            white-space: pre-wrap !important;
+        }
+
+        /* ========== I/O TABLE CUSTOM STYLES ========== */
+        .io-table .input-cell {
+            font-weight: 500 !important;
+            line-height: 1.0 !important;
+            padding: 2px 6px !important;
+            white-space: pre-wrap !important;
+        }
+
+        .io-table .output-cell {
+            font-weight: 500 !important;
+            line-height: 1.0 !important;
+            padding: 2px 6px !important;
+            white-space: pre-wrap !important;
+        }
+
+        .io-table .input-cell:focus {
+            background: #e3ecf5 !important;
+        }
+
+        .io-table .output-cell:focus {
+            background: #f0f0e8 !important;
+        }
+
+        /* Remove extra spacing from <br> and <p> inside I/O cells */
+        .io-table .input-cell br,
+        .io-table .output-cell br {
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 0 !important;
+            height: 0 !important;
+        }
+
+        .io-table .input-cell p,
+        .io-table .output-cell p {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.0 !important;
+        }
+
+        .io-table .input-cell *,
+        .io-table .output-cell * {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.0 !important;
+        }
+
+        /* ========== WEIGHT CLASSES ========== */
+        .weight-thin { font-weight: 100 !important; }
+        .weight-light { font-weight: 300 !important; }
+        .weight-regular { font-weight: 400 !important; }
+        .weight-medium { font-weight: 500 !important; }
+        .weight-bold { font-weight: 700 !important; }
+        .weight-black { font-weight: 900 !important; }
+
+        /* ========== CODE BLOCK ========== */
+        .code-container {
+            border: 1.4px solid #333;
+            border-radius: 2px;
+            margin: 5px 0 8px 0;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        .code-header {
+            background: #ececec;
+            padding: 3px 9px;
+            font-size: 8.5pt;
+            font-family: "Roboto", Arial, sans-serif;
+            color: #555;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-block { display: flex; overflow: hidden; }
+
+        /* ========== PREVIEW / IMAGE PANELS (multi-image, print-safe) ========== */
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12pt;
+            margin: 4pt 0 8pt 0;
+        }
+        .image-panel {
+            border: 1.4px solid #333;
+            border-radius: 2px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            overflow: hidden;
+        }
+        .image-panel .code-header {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .website-image-wrapper {
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 6pt;
+            max-width: 100%;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .website-image-wrapper img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        /* ========== SIDE-BY-SIDE CODE + TERMINAL ========== */
+        .code-terminal-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin: 5px 0 8px 0;
+            border: 1.4px solid #333;
+            border-radius: 2px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        .split-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 10px;
+            background: #e8e8e8;
+            border-bottom: 1px solid #ccc;
+            font-size: 9px;
+            font-family: "Roboto", Arial, sans-serif;
+            color: #444;
+            user-select: none;
+        }
+        .split-controls label { font-weight: 600; white-space: nowrap; }
+        .split-controls input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #bbb;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        .split-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #1565c0;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .split-controls .split-value {
+            min-width: 42px;
+            text-align: right;
+            font-weight: 700;
+            color: #1565c0;
+        }
+        .code-terminal-body {
+            display: flex;
+            width: 100%;
+            min-height: 180px;
+            overflow: hidden;
+        }
+        .code-pane {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid #bbb;
+            background: #fafafa;
+            min-width: 30%;
+        }
+        .code-pane .code-header {
+            border-radius: 0;
+            border-bottom: 1px solid #ccc;
+        }
+        .code-pane .code-block {
+            flex: 1;
+            overflow: auto;
+        }
+        .terminal-pane {
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+            color: #d4d4d4;
+            min-width: 20%;
+            overflow: hidden;
+        }
+        .terminal-header {
+            background: #2d2d2d;
+            padding: 3px 9px;
+            font-size: 8.5pt;
+            font-family: "Roboto", Arial, sans-serif;
+            color: #aaa;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .terminal-header .term-title {
+            color: #81c784;
+            font-weight: 600;
+        }
+        .terminal-content {
+            flex: 1;
+            padding: 8px 10px;
+            font-family: "Google Sans Code", "Fira Code", Consolas, "Courier New", monospace !important;
+            font-size: 10pt;
+            line-height: 1.45;
+            white-space: pre-wrap !important;
+            overflow: auto;
+            tab-size: 4;
+            color: #e0e0e0;
+            background: #1a1a1a;
+        }
+        .terminal-content:focus {
+            outline: none;
+            background: #1e1e1e;
+        }
+        .terminal-line-prompt { color: #81c784; }
+        .terminal-line-input { color: #fff; }
+        .terminal-line-output { color: #64b5f6; }
+        .terminal-line-error { color: #ef5350; }
+
+        /* When side-by-side is active, hide classic separate I/O section */
+        .page.side-by-side-active .classic-io-section {
+            display: none !important;
+        }
+        .page.side-by-side-active .classic-source-section {
+            display: none !important;
+        }
+
+
+        .line-numbers {
+            background: #f0f0f0;
+            color: #555;
+            text-align: right;
+            padding: 6px 8px;
+            user-select: none;
+            border-right: 1px solid #ddd;
+            min-width: 30px;
+            white-space: pre !important;
+        }
+        .line-numbers span {
+            display: block;
+            height: 1.35em;
+            line-height: 1.35em;
+        }
+
+        .code-content {
+            padding: 6px 10px;
+            white-space: pre !important;
+            flex: 1;
+            overflow-x: auto;
+            tab-size: 4;
+            background: #fafafa;
+            color: #111;
+            display: block;
+            word-wrap: break-word;
+        }
+        .code-content:focus { outline: none; background: #fffef5; }
+
+        /* ========== TABLE - SUPPORTS MULTI-LINE ========== */
+        .io-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0 8px 0;
+            table-layout: fixed;
+        }
+
+        .io-table,
+        .io-table th,
+        .io-table td {
+            border: 0.5px solid #222 !important;
+        }
+
+        .io-table th {
+            background: #f3f3f3;
+            padding: 4px 8px;
+            text-align: center;
+            font-weight: 700;
+            width: 50%;
+        }
+
+        .io-table td {
+            padding: 4px 8px;
+            vertical-align: top;
+            line-height: 1.2;
+            background: #fafafa;
+            min-height: 20px;
+            width: 50%;
+            word-wrap: break-word;
+            white-space: pre-wrap !important;
+        }
+
+        .row-delete-btn {
+            background: #c62828;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            padding: 1px 6px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .row-delete-btn:hover {
+            background: #b71c1c;
+        }
+
+        /* ========== PRESERVE FORMAT ========== */
+        .preserve-format .code-content,
+        .preserve-format .algorithm,
+        .preserve-format .io-input {
+            white-space: pre !important;
+            word-break: normal !important;
+            overflow-wrap: normal !important;
+        }
+        .preserve-format .discussion,
+        .preserve-format .problem-statement {
+            white-space: pre-wrap !important;
+        }
+
+        .wrap-code .code-content {
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+        .wrap-body .problem-statement,
+        .wrap-body .algorithm,
+        .wrap-body .discussion,
+        .wrap-body .io-input,
+        .wrap-body .io-table td {
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+
+        /* ========== TEXT ALIGNMENT ========== */
+        .text-left { text-align: left !important; }
+        .text-center { text-align: center !important; }
+        .text-right { text-align: right !important; }
+        .text-justify { text-align: justify !important; }
+
+        /* ========== RENDERED MARKDOWN INDICATOR ========== */
+        .rendered-markdown {
+            background: #faf8f0 !important;
+            padding-left: 8px !important;
+        }
+
+        /* ========== PRINT ========== */
+        @media print {
+            html, body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
+            .toolbar { display: none !important; }
+            .page {
+                width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                margin: 0 !important;
+                padding: 0 !important;          /* critical: let @page margin control the space */
+                box-shadow: none !important;
+                overflow: visible !important;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+                position: relative !important;
+            }
+            .page:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+                min-height: auto !important;
+                height: auto !important;
+            }
+            [contenteditable="true"] { 
+                outline: none !important; 
+                background: transparent !important; 
+            }
+            .code-container, .io-table, .algorithm, .discussion, .header, .section-title {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .image-panel,
+            .website-image-wrapper,
+            .website-image-wrapper img,
+            .preview-section .image-panel {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .row-delete-btn, .col-actions {
+                display: none !important;
+            }
+            
+            /* Thin borders in print */
+            .io-table,
+            .io-table th,
+            .io-table td {
+                border: 0.5px solid #222 !important;
+            }
+            
+            /* Remove I/O backgrounds in print */
+            .io-table .input-cell {
+                background: transparent !important;
+            }
+            .io-table .output-cell {
+                background: transparent !important;
+            }
+            
+            /* Print gap styles - will be overridden by JavaScript */
+            .section-title:not(:first-of-type) {
+                margin-top: 12px !important;
+            }
+            .section-title:first-of-type {
+                margin-top: 6px !important;
+            }
+            .section-title + .problem-statement,
+            .section-title + .algorithm,
+            .section-title + .code-container,
+            .section-title + .io-table,
+            .section-title + .discussion {
+                margin-top: 0px !important;
+            }
+            .discussion p,
+            .problem-statement p {
+                margin-top: 2px !important;
+            }
+            .discussion p + p,
+            .problem-statement p + p {
+                margin-top: 2px !important;
+            }
+            
+            /* Page break spacer becomes visible in print */
+            .page-break-spacer {
+                display: block !important;
+                page-break-after: always;
+                break-after: page;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                visibility: hidden !important;
+                overflow: hidden !important;
+            }
+            .page-break-indicator {
+                display: none !important;
+            }
+        }
+        
+        /* ========== HIDE SLIDER IN PRINT ========== */
+@media print {
+    .split-controls {
+        display: none !important;
+    }
+    .code-terminal-wrapper {
+        border: 1.4px solid #333 !important;
+    }
+    .terminal-pane {
+        background: #fff !important;
+        color: #000 !important;
+        border-left: 1px solid #999 !important;
+    }
+    .terminal-header {
+        background: #f0f0f0 !important;
+        color: #333 !important;
+        border-bottom: 1px solid #ccc !important;
+    }
+    .terminal-content {
+        background: #fff !important;
+        color: #000 !important;
+    }
+}
+
+/* ========== TERMINAL: WHITE BACKGROUND + BLACK TEXT ========== */
+.terminal-pane {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-left: 1px solid #bbb;
+}
+
+.terminal-header {
+    background: #f3f3f3 !important;
+    color: #333 !important;
+    border-bottom: 1px solid #ccc !important;
+}
+
+.terminal-header .term-title {
+    color: #1565c0 !important;   /* optional accent, can remove later */
+    font-weight: 600;
+}
+
+.terminal-content {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: "Fira Code", "Google Sans Code", Consolas, "Courier New", monospace !important;
+    font-size: 10.5pt;   /* default, will be overridden by JS */
+    line-height: 1.4;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar" id="toolbar">
+        <div class="drag-handle" id="dragHandle">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <!-- Row 1: Status & Basic Controls -->
+        <div class="toolbar-row">
+            <span class="status" id="editStatus">View</span>
+            <span class="context-hint" id="contextHint">Focus: <span id="contextName">None</span></span>
+            <button id="btnEdit" onclick="toggleEdit()">Enable Edit</button>
+            <button id="btnSideBySide" onclick="toggleSideBySide()" style="background:#6a1b9a;">Side-by-Side</button>
+            <button id="btnUploadImage" onclick="triggerImageUpload()" style="background:#e65100;">📷 Upload Image</button>
+            <button class="secondary" onclick="updatePageMargins(); window.print();">Print</button>
+            <button class="secondary" onclick="downloadTemplate()">Template</button>
+            <button class="secondary" onclick="importMarkdown()">Import</button>
+            <!-- Hidden file input for image upload -->
+            <input type="file" id="imageUploadInput" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(event)">
+        </div>
+
+        
+        <!-- Row 2: Undo/Redo & Format -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Actions</span>
+            <button class="secondary" onclick="undoAction()">Undo</button>
+            <button class="secondary" onclick="redoAction()">Redo</button>
+            <button class="context-btn" id="ctxFormatC" onclick="formatFocusedC()">Format HTML</button>
+            <button class="context-btn" id="ctxFormatAlgo" onclick="formatAlgorithm()">Format Algo</button>
+            <button class="context-btn" id="ctxRenderMD" onclick="renderFocusedMarkdown()">Render MD</button>
+            <button class="context-btn" id="ctxUnrenderMD" onclick="unrenderFocusedMarkdown()" style="background:#c62828;">Unrender MD</button>
+            <button class="danger" onclick="insertPageBreak()" style="background:#c62828;">⛔ Page Break</button>
+        </div>
+        
+        <!-- Row 3: Table Controls -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Table</span>
+            <button class="context-btn" id="ctxAddRow" onclick="addTableRow()">+Row</button>
+            <button class="context-btn" id="ctxDeleteRow" onclick="deleteTableRow()">-Row</button>
+            <button class="context-btn" id="ctxAddCol" onclick="addTableColumn()">+Col</button>
+            <button class="context-btn" id="ctxDeleteCol" onclick="deleteTableColumn()">-Col</button>
+        </div>
+        
+        <!-- Row 4: Alignment & Weight -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Style</span>
+            <button class="context-btn" id="ctxAlignLeft" onclick="alignText('left')">L</button>
+            <button class="context-btn" id="ctxAlignCenter" onclick="alignText('center')">C</button>
+            <button class="context-btn" id="ctxAlignRight" onclick="alignText('right')">R</button>
+            <button class="context-btn" id="ctxAlignJustify" onclick="alignText('justify')">J</button>
+            <div class="weight-controls">
+                <button onclick="applyWeight('100')">Thin</button>
+                <button onclick="applyWeight('300')">Light</button>
+                <button onclick="applyWeight('400')" class="active-weight">Reg</button>
+                <button onclick="applyWeight('500')">Med</button>
+                <button onclick="applyWeight('700')">Bold</button>
+                <button onclick="applyWeight('900')">Black</button>
+            </div>
+        </div>
+        
+        <!-- Row 5: Fonts -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Fonts</span>
+            <div class="ctrl-group">
+                <label>Head</label>
+                <select id="headingFont" onchange="changeHeadingFont(this.value); saveSettings();">
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                    <option value="'Source Sans 3', sans-serif">Source Sans 3</option>
+                    <option value="'Nunito', sans-serif">Nunito</option>
+                    <option value="'Raleway', sans-serif">Raleway</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Noto Sans', sans-serif">Noto Sans</option>
+                    <option value="'Work Sans', sans-serif">Work Sans</option>
+                    <option value="'Playfair Display', serif">Playfair</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                    <option value="'PT Serif', serif">PT Serif</option>
+                    <option value="'Libre Baskerville', serif">Libre</option>
+                    <option value="'Crimson Text', serif">Crimson</option>
+                </select>
+            </div>
+            <div class="ctrl-group">
+                <label>Body</label>
+                <select id="bodyFont" onchange="changeBodyFont(this.value); saveSettings();">
+                    <option value="'Merriweather', serif">Merriweather</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                    <option value="'Source Sans 3', sans-serif">Source Sans 3</option>
+                    <option value="'Nunito', sans-serif">Nunito</option>
+                    <option value="'Raleway', sans-serif">Raleway</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Noto Sans', sans-serif">Noto Sans</option>
+                    <option value="'Work Sans', sans-serif">Work Sans</option>
+                    <option value="'Playfair Display', serif">Playfair</option>
+                    <option value="'PT Serif', serif">PT Serif</option>
+                    <option value="'Libre Baskerville', serif">Libre</option>
+                    <option value="'Crimson Text', serif">Crimson</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                </select>
+            </div>
+            <div class="ctrl-group">
+                <label>Code</label>
+                <select id="codeFont" onchange="changeCodeFont(this.value); saveSettings();">
+                    <option value="'Google Sans Code', monospace">Google Sans Code</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="'Consolas', monospace">Consolas</option>
+                    <option value="'Monaco', monospace">Monaco</option>
+                    <option value="'Menlo', monospace">Menlo</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Row 6: Sizes -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Sizes</span>
+            <div class="ctrl-group">
+                <label>Overall</label>
+                <select id="overallSize" onchange="changeOverallSize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5">10.5</option>
+                    <option value="11" selected>11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                    <option value="13.5">13.5</option>
+                    <option value="14">14</option>
+                </select>
+            </div>
+            <div class="ctrl-group">
+                <label>Head</label>
+                <select id="headSize" onchange="changeHeadSize(this.value); saveSettings();">
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="15.5" selected>15.5</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                </select>
+            </div>
+            <div class="ctrl-group">
+                <label>Body</label>
+                <select id="bodySize" onchange="changeBodySize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5">10.5</option>
+                    <option value="11" selected>11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                    <option value="13.5">13.5</option>
+                    <option value="14">14</option>
+                </select>
+            </div>
+            <div class="ctrl-group">
+                <label>Code</label>
+                <select id="codeSize" onchange="changeCodeSize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5">10.5</option>
+                    <option value="11" selected>11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                </select>
+            </div>
+            <!-- Specific Section Size -->
+            <div class="ctrl-group" id="specificSizeGroup" style="display:none;border-color:#6a1b9a;">
+                <label style="color:#6a1b9a;">Specific</label>
+                <select id="specificSize" onchange="changeSpecificSize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5">10.5</option>
+                    <option value="11" selected>11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                    <option value="13.5">13.5</option>
+                    <option value="14">14</option>
+                    <option value="14.5">14.5</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+            <!-- I/O Table Size Controls -->
+            <div class="ctrl-group" id="ioSizeGroup" style="display:none;border-color:#1565c0;">
+                <label style="color:#1565c0;">In</label>
+                <select id="ioInputSize" onchange="changeIOInputSize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5" selected>10.5</option>
+                    <option value="11">11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                </select>
+                <label style="color:#2e7d32;">Out</label>
+                <select id="ioOutputSize" onchange="changeIOOutputSize(this.value); saveSettings();">
+                    <option value="8">8</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9">9</option>
+                    <option value="9.5">9.5</option>
+                    <option value="10">10</option>
+                    <option value="10.5" selected>10.5</option>
+                    <option value="11">11</option>
+                    <option value="11.5">11.5</option>
+                    <option value="12">12</option>
+                    <option value="12.5">12.5</option>
+                    <option value="13">13</option>
+                </select>
+            </div>
+            <!-- I/O Font Style Controls -->
+            <div class="ctrl-group" id="ioFontGroup" style="display:none;border-color:#6a1b9a;">
+                <label style="color:#1565c0;">In Font</label>
+                <select id="ioInputFont" onchange="changeIOInputFont(this.value); saveSettings();">
+                    <option value="'Fira Code', monospace">Fira Code</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                    <option value="'Courier Prime', monospace">Courier Prime</option>
+                    <option value="'Google Sans Code', monospace">Google Sans Code</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="'Consolas', monospace">Consolas</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Source Sans 3', sans-serif">Source Sans 3</option>
+                    <option value="'Nunito', sans-serif">Nunito</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                </select>
+                <label style="color:#2e7d32;">Out Font</label>
+                <select id="ioOutputFont" onchange="changeIOOutputFont(this.value); saveSettings();">
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Source Sans 3', sans-serif">Source Sans 3</option>
+                    <option value="'Nunito', sans-serif">Nunito</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                    <option value="'Fira Code', monospace">Fira Code</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                    <option value="'Courier Prime', monospace">Courier Prime</option>
+                    <option value="'Google Sans Code', monospace">Google Sans Code</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="'Consolas', monospace">Consolas</option>
+                </select>
+                <button onclick="applyIOStylesDirect()" style="background:#6a1b9a;font-size:8px;padding:2px 6px;height:20px;">Apply</button>
+            </div>
+        </div>
+        
+        <!-- Row 7: Margins & Gap Slider -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Layout</span>
+            <div class="ctrl-group">
+                <label>T</label>
+                <input type="number" id="marginTop" value="12" min="0" max="40" onchange="updatePageMargins(); saveSettings();">
+                <label>R</label>
+                <input type="number" id="marginRight" value="14" min="0" max="40" onchange="updatePageMargins(); saveSettings();">
+                <label>B</label>
+                <input type="number" id="marginBottom" value="12" min="0" max="40" onchange="updatePageMargins(); saveSettings();">
+                <label>L</label>
+                <input type="number" id="marginLeft" value="14" min="0" max="40" onchange="updatePageMargins(); saveSettings();">
+            </div>
+        </div>
+        
+        <!-- Row 7.5: Gap Controls - One Slider with 3 Modes -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Gap</span>
+            <div class="ctrl-group" style="min-width:220px;flex-wrap:wrap;gap:4px;padding:4px 6px;">
+                <label style="font-size:7px;color:#888;width:100%;margin-bottom:1px;">Target:</label>
+                <label style="font-size:8px;color:#1565c0;cursor:pointer;display:flex;align-items:center;gap:2px;">
+                    <input type="radio" name="gapMode" value="section" checked onchange="setGapMode('section')">
+                    Section
+                </label>
+                <label style="font-size:8px;color:#6a1b9a;cursor:pointer;display:flex;align-items:center;gap:2px;">
+                    <input type="radio" name="gapMode" value="heading" onchange="setGapMode('heading')">
+                    Head-Text
+                </label>
+                <label style="font-size:8px;color:#2e7d32;cursor:pointer;display:flex;align-items:center;gap:2px;">
+                    <input type="radio" name="gapMode" value="paragraph" onchange="setGapMode('paragraph')">
+                    Paragraph
+                </label>
+            </div>
+            <div class="ctrl-group" style="min-width:150px;">
+                <input type="range" id="gapSlider" min="0" max="30" value="12" step="1" 
+                       oninput="updateGapFromSlider(this.value);" style="width:80px;">
+                <span id="gapSliderLabel" style="font-size:8px;color:#aaa;min-width:25px;">12</span>
+            </div>
+            <button onclick="resetGaps()" style="background:#444;font-size:8px;padding:2px 6px;height:20px;">Reset</button>
+        </div>
+        
+        <!-- Row 8: Options & Zoom -->
+        <div class="toolbar-row">
+            <span class="toolbar-row-label">Options</span>
+            <div class="ctrl-group">
+                <input type="checkbox" id="preserveFormat" checked onchange="togglePreserveFormat(); saveSettings();">
+                <label for="preserveFormat">Preserve</label>
+            </div>
+            <div class="ctrl-group">
+                <input type="checkbox" id="wrapCode" onchange="toggleCodeWrap(); saveSettings();">
+                <label for="wrapCode">Wrap Code</label>
+                <input type="checkbox" id="wrapBody" onchange="toggleBodyWrap(); saveSettings();">
+                <label for="wrapBody">Wrap Body</label>
+            </div>
+            <div class="zoom-controls">
+                <button onclick="zoomToolbar(-0.1)">-</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button onclick="zoomToolbar(0.1)">+</button>
+            </div>
+            <button class="secondary" onclick="saveSettings(); alert('Settings saved!');">Save</button>
+            <button class="danger" onclick="resetContent()">Reset</button>
+        </div>
+    </div>
+
+    <div class="page preserve-format" id="pageContent">
+        <!-- Content will be dynamically generated -->
+    </div>
+
+<script>
+        // ================================================================
+        // SECTION 1: CONSTANTS & CONFIGURATION
+        // ================================================================
+        const ALL_FONTS = [
+            "'Roboto', sans-serif",
+            "'Open Sans', sans-serif",
+            "'Lato', sans-serif",
+            "'Montserrat', sans-serif",
+            "'Poppins', sans-serif",
+            "'Source Sans 3', sans-serif",
+            "'Nunito', sans-serif",
+            "'Raleway', sans-serif",
+            "'Oswald', sans-serif",
+            "'Ubuntu', sans-serif",
+            "'Inter', sans-serif",
+            "'Noto Sans', sans-serif",
+            "'Work Sans', sans-serif",
+            "'Playfair Display', serif",
+            "'Merriweather', serif",
+            "'PT Serif', serif",
+            "'Libre Baskerville', serif",
+            "'Crimson Text', serif"
+        ];
+
+        const FONT_NAMES = [
+            "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins",
+            "Source Sans 3", "Nunito", "Raleway", "Oswald", "Ubuntu",
+            "Inter", "Noto Sans", "Work Sans", "Playfair Display",
+            "Merriweather", "PT Serif", "Libre Baskerville", "Crimson Text"
+        ];
+
+        const CODE_FONTS = [
+            "'Google Sans Code', monospace",
+            "'Courier New', monospace",
+            "'Consolas', monospace",
+            "'Monaco', monospace",
+            "'Menlo', monospace",
+            "'Roboto Mono', monospace"
+        ];
+
+        const CODE_FONT_NAMES = [
+            "Google Sans Code", "Courier New", "Consolas", "Monaco", "Menlo", "Roboto Mono"
+        ];
+
+        const DEFAULT_MARKDOWN = `# Assignment 1
+---
+
+### QUESTION
+Design a clean black & white printable layout with 8mm/8mm/8mm/10mm margins. Use Montserrat, Crimson Text, and Source Code Pro. Create a responsive card component that displays assignment content.
+
+### SOURCE CODE
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment 1</title>
+  <style>
+    /* internal CSS */
+    .card {
+      border: 1px solid black;
+      padding: 12pt;
+      max-width: 100%;
+    }
+    .container {
+      padding: 8mm 8mm 10mm 8mm;
+    }
+    @media print {
+      .image-panel { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>Assignment</header>
+    <section>......Text......</section>
+  </div>
+</body>
+</html>
+\`\`\`
+
+### PREVIEW
+---Img---
+
+### DISCUSSION
+The layout uses a clean black-and-white design with careful margin control for print. Source code is formatted for readability, and preview images retain their aspect ratio and never break across pages.
+
+Multiple screenshots can be stacked under PREVIEW; each is protected with page-break-inside: avoid.
+
+***`;
+
+        const STORAGE_KEY = 'assignmentAppData';
+        const MAX_UNDO_STEPS = 50;
+
+        // ================================================================
+        // SECTION 2: GLOBAL STATE
+        // ================================================================
+        let currentMarkdown = DEFAULT_MARKDOWN;
+        let editMode = false;
+        let currentContext = 'none';
+        let toolbarZoom = 1.0;
+        let lastFocusedElement = null;
+        let focusedSectionType = null;
+        let undoStack = [];
+        let redoStack = [];
+        let isUndoRedo = false;
+
+        // Side-by-side / Terminal mode
+        let sideBySideMode = false;
+        let codeTerminalSplit = 68; // % width for code pane
+
+        // Gap values
+        let currentGapMode = 'section';
+        let gapValues = {
+            section: 12,
+            heading: 0,
+            paragraph: 2
+        };
+
+
+        // ================================================================
+        // SECTION 3: PAGE BREAK – INSERT AT CURSOR
+        // ================================================================
+        function insertPageBreak() {
+            if (!editMode) {
+                alert('Please enable Edit mode first (Ctrl+E)');
+                return;
+            }
+
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const container = range.commonAncestorContainer;
+                let editableEl = null;
+                if (container.nodeType === Node.TEXT_NODE) {
+                    editableEl = container.parentElement.closest('[contenteditable="true"]');
+                } else if (container.nodeType === Node.ELEMENT_NODE) {
+                    editableEl = container.closest('[contenteditable="true"]');
+                }
+
+                if (editableEl) {
+                    const pageBreakHTML = `<div class="page-break-wrapper" contenteditable="true">
+                        <div class="page-break-indicator"><span>⛔ PAGE BREAK ⛔</span></div>
+                        <div class="page-break-spacer"></div>
+                    </div>`;
+
+                    const fragment = range.createContextualFragment(pageBreakHTML);
+                    range.insertNode(fragment);
+                    range.setStartAfter(fragment);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    saveState();
+                    const status = document.getElementById('editStatus');
+                    status.textContent = '⛔ Page break inserted!';
+                    setTimeout(() => {
+                        status.textContent = editMode ? 'Edit ON' : 'View';
+                    }, 1500);
+                    return;
+                }
+            }
+
+            // Fallback: append at the end
+            const page = document.getElementById('pageContent');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'page-break-wrapper';
+            wrapper.setAttribute('contenteditable', 'false');
+
+            const indicator = document.createElement('div');
+            indicator.className = 'page-break-indicator';
+            const span = document.createElement('span');
+            span.textContent = '⛔ PAGE BREAK ⛔';
+            indicator.appendChild(span);
+            wrapper.appendChild(indicator);
+
+            const spacer = document.createElement('div');
+            spacer.className = 'page-break-spacer';
+            wrapper.appendChild(spacer);
+
+            page.appendChild(wrapper);
+            saveState();
+
+            const status = document.getElementById('editStatus');
+            status.textContent = '⛔ Page break inserted at end!';
+            setTimeout(() => {
+                status.textContent = editMode ? 'Edit ON' : 'View';
+            }, 1500);
+        }
+
+        // ================================================================
+        // SECTION 4: SETTINGS & STORAGE
+        // ================================================================
+        function getSettingsObject() {
+            return {
+                headingFont: document.getElementById('headingFont')?.value || "'Montserrat', sans-serif",
+                bodyFont: document.getElementById('bodyFont')?.value || "'Merriweather', serif",
+                codeFont: document.getElementById('codeFont')?.value || "'Google Sans Code', monospace",
+                overallSize: document.getElementById('overallSize')?.value || "11",
+                headSize: document.getElementById('headSize')?.value || "15.5",
+                bodySize: document.getElementById('bodySize')?.value || "11",
+                codeSize: document.getElementById('codeSize')?.value || "11",
+                specificSize: document.getElementById('specificSize')?.value || "11",
+                ioInputSize: document.getElementById('ioInputSize')?.value || "10.5",
+                ioOutputSize: document.getElementById('ioOutputSize')?.value || "10.5",
+                ioInputFont: document.getElementById('ioInputFont')?.value || "'Fira Code', monospace",
+                ioOutputFont: document.getElementById('ioOutputFont')?.value || "'Roboto', sans-serif",
+                marginTop: document.getElementById('marginTop')?.value || "12",
+                marginRight: document.getElementById('marginRight')?.value || "14",
+                marginBottom: document.getElementById('marginBottom')?.value || "12",
+                marginLeft: document.getElementById('marginLeft')?.value || "14",
+                gapSection: gapValues.section || 12,
+                gapHeading: gapValues.heading || 0,
+                gapParagraph: gapValues.paragraph || 2,
+                gapMode: currentGapMode || 'section',
+                preserve: document.getElementById('preserveFormat')?.checked !== false,
+                wrapCode: document.getElementById('wrapCode')?.checked || false,
+                wrapBody: document.getElementById('wrapBody')?.checked || false,
+                sideBySideMode: sideBySideMode || false,
+                codeTerminalSplit: codeTerminalSplit || 68
+            };
+        }
+
+
+        function saveAppData() {
+            try {
+                const pageContent = document.getElementById('pageContent').innerHTML;
+                const data = {
+                    content: pageContent,
+                    markdown: currentMarkdown,
+                    settings: getSettingsObject(),
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                console.log('💾 App data saved');
+            } catch (e) {
+                console.warn('Failed to save app data:', e);
+            }
+        }
+
+        function loadAppData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    console.log('📂 App data loaded from:', new Date(data.timestamp).toLocaleString());
+
+                    if (data.content) {
+                        document.getElementById('pageContent').innerHTML = data.content;
+                        undoStack = [data.content];
+                    }
+
+                    if (data.markdown) {
+                        currentMarkdown = data.markdown;
+                    }
+
+                    if (data.settings) {
+                        applySettings(data.settings);
+                    }
+
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Failed to load app data:', e);
+            }
+            return false;
+        }
+
+        function applySettings(settings) {
+            try {
+                if (settings.headingFont) {
+                    document.getElementById('headingFont').value = settings.headingFont;
+                    changeHeadingFont(settings.headingFont);
+                }
+                if (settings.bodyFont) {
+                    document.getElementById('bodyFont').value = settings.bodyFont;
+                    changeBodyFont(settings.bodyFont);
+                }
+                if (settings.codeFont) {
+                    document.getElementById('codeFont').value = settings.codeFont;
+                    changeCodeFont(settings.codeFont);
+                }
+                if (settings.overallSize) {
+                    document.getElementById('overallSize').value = settings.overallSize;
+                    changeOverallSize(settings.overallSize);
+                }
+                if (settings.headSize) {
+                    document.getElementById('headSize').value = settings.headSize;
+                    changeHeadSize(settings.headSize);
+                }
+                if (settings.bodySize) {
+                    document.getElementById('bodySize').value = settings.bodySize;
+                    changeBodySize(settings.bodySize);
+                }
+                if (settings.codeSize) {
+                    document.getElementById('codeSize').value = settings.codeSize;
+                    changeCodeSize(settings.codeSize);
+                }
+                if (settings.specificSize) {
+                    document.getElementById('specificSize').value = settings.specificSize;
+                }
+                if (settings.ioInputSize) {
+                    document.getElementById('ioInputSize').value = settings.ioInputSize;
+                    changeIOInputSize(settings.ioInputSize);
+                }
+                if (settings.ioOutputSize) {
+                    document.getElementById('ioOutputSize').value = settings.ioOutputSize;
+                    changeIOOutputSize(settings.ioOutputSize);
+                }
+                if (settings.ioInputFont) {
+                    document.getElementById('ioInputFont').value = settings.ioInputFont;
+                    changeIOInputFont(settings.ioInputFont);
+                }
+                if (settings.ioOutputFont) {
+                    document.getElementById('ioOutputFont').value = settings.ioOutputFont;
+                    changeIOOutputFont(settings.ioOutputFont);
+                }
+                if (settings.marginTop) {
+                    document.getElementById('marginTop').value = settings.marginTop;
+                    document.getElementById('marginRight').value = settings.marginRight || 14;
+                    document.getElementById('marginBottom').value = settings.marginBottom || 12;
+                    document.getElementById('marginLeft').value = settings.marginLeft || 14;
+                    updatePageMargins();
+                }
+                if (settings.gapSection !== undefined) {
+                    gapValues.section = parseInt(settings.gapSection) || 12;
+                }
+                if (settings.gapHeading !== undefined) {
+                    gapValues.heading = parseInt(settings.gapHeading) || 0;
+                }
+                if (settings.gapParagraph !== undefined) {
+                    gapValues.paragraph = parseInt(settings.gapParagraph) || 2;
+                }
+                if (settings.gapMode !== undefined) {
+                    currentGapMode = settings.gapMode;
+                }
+                if (settings.preserve !== undefined) {
+                    document.getElementById('preserveFormat').checked = settings.preserve;
+                    togglePreserveFormat();
+                }
+                if (settings.wrapCode !== undefined) {
+                    document.getElementById('wrapCode').checked = settings.wrapCode;
+                    toggleCodeWrap();
+                }
+                if (settings.wrapBody !== undefined) {
+                    document.getElementById('wrapBody').checked = settings.wrapBody;
+                    toggleBodyWrap();
+                }
+                if (settings.sideBySideMode !== undefined) {
+                    sideBySideMode = !!settings.sideBySideMode;
+                    const btn = document.getElementById('btnSideBySide');
+                    if (btn) {
+                        if (sideBySideMode) {
+                            btn.textContent = 'Classic Mode';
+                            btn.style.background = '#2e7d32';
+                        } else {
+                            btn.textContent = 'Side-by-Side';
+                            btn.style.background = '#6a1b9a';
+                        }
+                    }
+                }
+                if (settings.codeTerminalSplit !== undefined) {
+                    codeTerminalSplit = parseInt(settings.codeTerminalSplit) || 68;
+                }
+
+                setTimeout(function() {
+                    initGaps();
+                }, 100);
+
+            } catch (e) {
+                console.warn('Failed to apply settings:', e);
+            }
+        }
+
+
+        // ================================================================
+        // SECTION 5: UNDO / REDO
+        // ================================================================
+        function saveState() {
+            if (isUndoRedo) return;
+            const page = document.getElementById('pageContent');
+            const state = page.innerHTML;
+            if (undoStack.length > 0 && undoStack[undoStack.length - 1] === state) return;
+            undoStack.push(state);
+            if (undoStack.length > MAX_UNDO_STEPS) undoStack.shift();
+            redoStack = [];
+            saveAppData();
+        }
+
+        function undoAction() {
+            if (undoStack.length <= 1) {
+                alert('Nothing to undo');
+                return;
+            }
+            isUndoRedo = true;
+            const currentState = document.getElementById('pageContent').innerHTML;
+            redoStack.push(currentState);
+            undoStack.pop();
+            const previousState = undoStack[undoStack.length - 1];
+            document.getElementById('pageContent').innerHTML = previousState;
+            isUndoRedo = false;
+            applyAllStyles();
+            saveAppData();
+            const status = document.getElementById('editStatus');
+            status.textContent = '↩️ Undo';
+            setTimeout(() => {
+                status.textContent = editMode ? 'Edit ON' : 'View';
+            }, 1500);
+        }
+
+        function redoAction() {
+            if (redoStack.length === 0) {
+                alert('Nothing to redo');
+                return;
+            }
+            isUndoRedo = true;
+            const state = redoStack.pop();
+            const currentState = document.getElementById('pageContent').innerHTML;
+            undoStack.push(currentState);
+            document.getElementById('pageContent').innerHTML = state;
+            isUndoRedo = false;
+            applyAllStyles();
+            saveAppData();
+            const status = document.getElementById('editStatus');
+            status.textContent = '↪️ Redo';
+            setTimeout(() => {
+                status.textContent = editMode ? 'Edit ON' : 'View';
+            }, 1500);
+        }
+
+        // ================================================================
+        // SECTION 6: FONT SELECTORS
+        // ================================================================
+        function populateFontSelectors() {
+            const selectors = ['headingFont', 'bodyFont'];
+            selectors.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (!select) return;
+                select.innerHTML = '';
+                for (let i = 0; i < ALL_FONTS.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = ALL_FONTS[i];
+                    option.textContent = FONT_NAMES[i];
+                    select.appendChild(option);
+                }
+                let defaultFont = "'Merriweather', serif";
+                if (selectorId === 'headingFont') defaultFont = "'Montserrat', sans-serif";
+                select.value = defaultFont;
+            });
+
+            const codeSelect = document.getElementById('codeFont');
+            if (codeSelect) {
+                codeSelect.innerHTML = '';
+                for (let i = 0; i < CODE_FONTS.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = CODE_FONTS[i];
+                    option.textContent = CODE_FONT_NAMES[i];
+                    codeSelect.appendChild(option);
+                }
+                codeSelect.value = "'Google Sans Code', monospace";
+            }
+        }
+
+        // ================================================================
+        // SECTION 7: MARKDOWN PARSER (CLEAN, NO AUTO PAGE BREAKS)
+        // ================================================================
+        function parseMarkdown(md) {
+            const lines = md.split('\n');
+            const sections = {};
+            let currentSection = null;
+            let currentContent = [];
+            let title = 'Assignment';
+            let pendingPageBreak = false;
+            const pageBreakBeforeSections = []; // list of section names with a break before
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmed = line.trim();
+
+                // Page break detection
+                if (trimmed === '<page-break>') {
+                    pendingPageBreak = true;
+                    // If we were in a section, save it (but we'll need to mark the next section)
+                    // We'll handle it when we start the next section
+                    continue;
+                }
+
+                if (!trimmed) continue;
+
+                // Title
+                if (line.startsWith('# ') && !line.startsWith('###')) {
+                    title = line.replace('# ', '').trim();
+                    continue;
+                }
+
+                // Separators
+                if (trimmed === '---' || trimmed === '***') continue;
+
+                // Section heading
+                const sectionMatch = line.match(/^###\s+(.+?)$/);
+                if (sectionMatch) {
+                    // Save previous section
+                    if (currentSection && currentContent.length > 0) {
+                        sections[currentSection] = currentContent.join('\n').trim();
+                    }
+                    currentSection = sectionMatch[1].toLowerCase().replace(/\s+/g, '_');
+                    currentContent = [];
+
+                    // If we had a pending page break, mark this section
+                    if (pendingPageBreak) {
+                        pageBreakBeforeSections.push(currentSection);
+                        pendingPageBreak = false;
+                    }
+                    continue;
+                }
+
+                // Content inside a section
+                if (currentSection) {
+                    currentContent.push(line);
+                }
+            }
+
+            // Save last section
+            if (currentSection && currentContent.length > 0) {
+                sections[currentSection] = currentContent.join('\n').trim();
+                // If a page break was pending at the end (after last section), ignore it
+            }
+
+            return { title, sections, pageBreakBeforeSections };
+        }
+
+        // ================================================================
+        // SECTION 8: HTML / CSS CODE FORMATTER (inline + internal)
+        // ================================================================
+        function formatCCode(code) { // keep name for compatibility with existing toolbar call
+            return formatHTMLCode(code);
+        }
+
+        function formatHTMLCode(code) {
+            // Simple but effective HTML + CSS indenter
+            // Handles tags, self-closing, and basic CSS blocks inside <style>
+            const lines = code.replace(/\r\n/g, '\n').split('\n');
+            let result = [];
+            let indentLevel = 0;
+            const indentSize = 2;
+            let inStyle = false;
+            let inScript = false;
+
+            for (let raw of lines) {
+                let line = raw.replace(/\t/g, '  ');
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    result.push('');
+                    continue;
+                }
+
+                // Detect style / script blocks
+                if (trimmed.match(/<style[\s>]/i)) inStyle = true;
+                if (trimmed.match(/<\/style>/i)) inStyle = false;
+                if (trimmed.match(/<script[\s>]/i)) inScript = true;
+                if (trimmed.match(/<\/script>/i)) inScript = false;
+
+                // Closing tags or CSS closing brace reduce indent first
+                if (trimmed.startsWith('</') || trimmed === '}' || trimmed.startsWith('}')) {
+                    indentLevel = Math.max(0, indentLevel - 1);
+                }
+
+                const indent = ' '.repeat(indentLevel * indentSize);
+                result.push(indent + trimmed);
+
+                // Opening tags (not self-closing) or CSS opening brace increase indent
+                const isOpeningTag = trimmed.match(/^<[^/!][^>]*>$/) && !trimmed.endsWith('/>') && !trimmed.match(/^<(img|br|hr|input|meta|link|area|base|col|embed|source|track|wbr)\b/i);
+                const isCssOpen = (inStyle || inScript) && trimmed.endsWith('{') && !trimmed.startsWith('}');
+                if (isOpeningTag || isCssOpen) {
+                    indentLevel++;
+                }
+            }
+            return result.join('\n');
+        }
+
+        // ================================================================
+        // SECTION 9: ALGORITHM FORMATTER
+        // ================================================================
+        function formatAlgorithm(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            let result = [];
+            let indentLevel = 0;
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.match(/^(Step\s+\d+|Step\s+\[|\d+\.)/i)) {
+                    indentLevel = 0;
+                } else if (trimmed.startsWith('Step')) {
+                    indentLevel = 1;
+                }
+                const indent = ' '.repeat(indentLevel * 2);
+                result.push(indent + trimmed);
+                if (trimmed.endsWith(':') || trimmed.includes('then') || trimmed.includes('→')) {
+                    indentLevel = 1;
+                }
+            }
+            return result.join('\n');
+        }
+
+        // ================================================================
+        // SECTION 10: RENDER ENGINE (CLEAN, NO AUTO PAGE BREAKS)
+        // ================================================================
+        function renderAssignment(markdown) {
+            const parsed = parseMarkdown(markdown);
+            const { title, sections, pageBreakBeforeSections } = parsed;
+            const page = document.getElementById('pageContent');
+
+            page.innerHTML = '';
+
+            // Title
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'header';
+            titleDiv.setAttribute('contenteditable', 'false');
+            titleDiv.setAttribute('data-field', 'title');
+            titleDiv.textContent = title || 'Assignment';
+            page.appendChild(titleDiv);
+
+            const divider = document.createElement('hr');
+            divider.className = 'divider';
+            page.appendChild(divider);
+
+            // Apply side-by-side class to page
+            if (sideBySideMode) {
+                page.classList.add('side-by-side-active');
+            } else {
+                page.classList.remove('side-by-side-active');
+            }
+
+            // New section order for Web Dev assignments
+            const sectionOrder = ['question', 'source_code', 'preview', 'discussion'];
+            // Keep legacy aliases so old markdown still partially works
+            if (sections['problem_statement'] && !sections['question']) {
+                sections['question'] = sections['problem_statement'];
+            }
+            let sideBySideRendered = false;
+
+            sectionOrder.forEach(sectionName => {
+                const content = sections[sectionName];
+                if (!content) return;
+
+                // Side-by-side is less relevant now (no terminal). Skip the old I/O path.
+                if (sideBySideMode && sectionName === 'source_code' && sections['input/output']) {
+                    // Insert page break if marked for source
+                    if (pageBreakBeforeSections.includes(sectionName)) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'page-break-wrapper';
+                        wrapper.setAttribute('contenteditable', 'false');
+                        const indicator = document.createElement('div');
+                        indicator.className = 'page-break-indicator';
+                        const span = document.createElement('span');
+                        span.textContent = '⛔ PAGE BREAK ⛔';
+                        indicator.appendChild(span);
+                        wrapper.appendChild(indicator);
+                        const spacer = document.createElement('div');
+                        spacer.className = 'page-break-spacer';
+                        wrapper.appendChild(spacer);
+                        page.appendChild(wrapper);
+                    }
+
+                    // Combined title
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'section-title';
+                    titleEl.setAttribute('contenteditable', 'false');
+                    titleEl.setAttribute('data-field', 'heading-source_code');
+                    titleEl.textContent = 'SOURCE CODE';
+                    page.appendChild(titleEl);
+
+                    const codeMatch = content.match(/```(\w*)\n([\s\S]*?)```/);
+                    const codeContent = codeMatch ? codeMatch[2].trim() : content;
+                    const ioContent = sections['input/output'];
+
+                    const combined = createSideBySideBlock(codeContent, ioContent);
+                    page.appendChild(combined);
+                    sideBySideRendered = true;
+                    return; // skip normal source handling
+                }
+
+                // Skip classic input/output section when side-by-side already rendered it
+                if (sideBySideMode && sectionName === 'input/output' && sideBySideRendered) {
+                    return;
+                }
+
+                // Insert page break if this section is marked
+                if (pageBreakBeforeSections.includes(sectionName)) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'page-break-wrapper';
+                    wrapper.setAttribute('contenteditable', 'false');
+
+                    const indicator = document.createElement('div');
+                    indicator.className = 'page-break-indicator';
+                    const span = document.createElement('span');
+                    span.textContent = '⛔ PAGE BREAK ⛔';
+                    indicator.appendChild(span);
+                    wrapper.appendChild(indicator);
+
+                    const spacer = document.createElement('div');
+                    spacer.className = 'page-break-spacer';
+                    wrapper.appendChild(spacer);
+
+                    page.appendChild(wrapper);
+                }
+
+                // Section title
+                let titleText = '';
+                switch (sectionName) {
+                    case 'question':
+                    case 'problem_statement': titleText = 'QUESTION'; break;
+                    case 'source_code': titleText = 'SOURCE'; break;
+                    case 'preview': titleText = 'PREVIEW'; break;
+                    case 'discussion': titleText = 'DISCUSSION'; break;
+                    default: return;
+                }
+                const titleEl = document.createElement('div');
+                titleEl.className = 'section-title';
+                titleEl.setAttribute('contenteditable', 'false');
+                titleEl.setAttribute('data-field', `heading-${sectionName}`);
+                // Mark classic sections so CSS can hide them if needed
+                if (sectionName === 'source_code') titleEl.classList.add('classic-source-section');
+                if (sectionName === 'input/output') titleEl.classList.add('classic-io-section');
+                titleEl.textContent = titleText;
+                page.appendChild(titleEl);
+
+                // Section content
+                switch (sectionName) {
+                    case 'question':
+                    case 'problem_statement': {
+                        const el = document.createElement('div');
+                        el.className = 'problem-statement';
+                        el.setAttribute('contenteditable', 'false');
+                        el.setAttribute('data-field', 'problem');
+                        el.innerHTML = content.replace(/\n/g, '<br>');
+                        page.appendChild(el);
+                        break;
+                    }
+                    case 'source_code': {
+                        // Classic full-width code (HTML/CSS)
+                        const codeMatch = content.match(/```(\w*)\n([\s\S]*?)```/);
+                        const codeContent = codeMatch ? codeMatch[2].trim() : content;
+
+                        const codeContainer = document.createElement('div');
+                        codeContainer.className = 'code-container classic-source-section';
+
+                        const codeHeader = document.createElement('div');
+                        codeHeader.className = 'code-header';
+                        codeHeader.innerHTML = `<span>HTML / CSS Source Code</span>`;
+                        codeContainer.appendChild(codeHeader);
+
+                        const codeBlock = document.createElement('div');
+                        codeBlock.className = 'code-block';
+
+                        const lineNumbers = document.createElement('div');
+                        lineNumbers.className = 'line-numbers';
+                        codeBlock.appendChild(lineNumbers);
+
+                        const codeEl = document.createElement('div');
+                        codeEl.className = 'code-content';
+                        codeEl.setAttribute('contenteditable', 'false');
+                        codeEl.setAttribute('data-field', 'source');
+                        codeEl.setAttribute('spellcheck', 'false');
+                        codeEl.textContent = codeContent;
+                        codeBlock.appendChild(codeEl);
+
+                        codeContainer.appendChild(codeBlock);
+                        page.appendChild(codeContainer);
+
+                        setTimeout(() => updateLineNumbersFor(codeEl), 10);
+                        break;
+                    }
+                    case 'preview': {
+                        // Multi-image PREVIEW section
+                        // Supports:
+                        //   ![alt](data:image/... or url)
+                        //   ---Img---   (placeholder box)
+                        //   raw data:image/... lines
+                        // Images are stacked, keep aspect ratio, never break across pages
+
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'preview-section';
+                        previewWrapper.setAttribute('data-field', 'preview');
+                        previewWrapper.style.display = 'flex';
+                        previewWrapper.style.flexDirection = 'column';
+                        previewWrapper.style.gap = '12pt';
+                        previewWrapper.style.margin = '4pt 0 8pt 0';
+
+                        // Extract all markdown images and ---Img--- markers
+                        const imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+                        const lines = content.split('\n');
+                        let foundAny = false;
+                        let match;
+
+                        // First pass: markdown images
+                        const images = [];
+                        while ((match = imgRegex.exec(content)) !== null) {
+                            images.push({ alt: match[1] || 'Preview', src: match[2].trim() });
+                        }
+
+                        // Also support standalone data: URLs or ---Img---
+                        lines.forEach(line => {
+                            const t = line.trim();
+                            if (t === '---Img---' || t.toLowerCase() === '---img---') {
+                                images.push({ alt: 'Placeholder', src: null });
+                            } else if (t.startsWith('data:image/') && !images.some(i => i.src === t)) {
+                                images.push({ alt: 'Screenshot', src: t });
+                            }
+                        });
+
+                        if (images.length === 0) {
+                            // Fallback placeholder
+                            images.push({ alt: 'Website preview', src: null });
+                        }
+
+                        images.forEach((img, idx) => {
+                            const panel = document.createElement('div');
+                            panel.className = 'image-panel';
+                            panel.style.border = '1px solid #333';
+                            panel.style.background = '#fff';
+                            panel.style.pageBreakInside = 'avoid';
+                            panel.style.breakInside = 'avoid';
+                            panel.style.display = 'flex';
+                            panel.style.flexDirection = 'column';
+
+                            const header = document.createElement('div');
+                            header.className = 'code-header';
+                            header.style.background = '#ececec';
+                            header.style.padding = '3px 9px';
+                            header.style.fontSize = '8.5pt';
+                            header.style.borderBottom = '1px solid #ccc';
+                            header.innerHTML = `<span>Website Output ${images.length > 1 ? (idx + 1) : ''}</span>`;
+                            panel.appendChild(header);
+
+                            const body = document.createElement('div');
+                            body.style.padding = '10pt';
+                            body.style.display = 'flex';
+                            body.style.justifyContent = 'center';
+                            body.style.alignItems = 'center';
+                            body.style.pageBreakInside = 'avoid';
+                            body.style.breakInside = 'avoid';
+
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'website-image-wrapper';
+                            wrapper.style.border = '1px solid #ccc';
+                            wrapper.style.padding = '6pt';
+                            wrapper.style.maxWidth = '100%';
+                            wrapper.style.pageBreakInside = 'avoid';
+                            wrapper.style.breakInside = 'avoid';
+                            wrapper.style.background = '#fff';
+
+                            if (img.src) {
+                                const imageEl = document.createElement('img');
+                                imageEl.src = img.src;
+                                imageEl.alt = img.alt;
+                                imageEl.style.display = 'block';
+                                imageEl.style.maxWidth = '100%';
+                                imageEl.style.height = 'auto';
+                                imageEl.style.objectFit = 'contain';
+                                imageEl.style.pageBreakInside = 'avoid';
+                                imageEl.style.breakInside = 'avoid';
+                                wrapper.appendChild(imageEl);
+                            } else {
+                                // Placeholder box
+                                const ph = document.createElement('div');
+                                ph.style.width = '100%';
+                                ph.style.minHeight = '120px';
+                                ph.style.background = '#f5f5f5';
+                                ph.style.display = 'flex';
+                                ph.style.alignItems = 'center';
+                                ph.style.justifyContent = 'center';
+                                ph.style.color = '#666';
+                                ph.style.fontFamily = 'Merriweather, serif';
+                                ph.style.fontSize = '11pt';
+                                ph.style.fontStyle = 'italic';
+                                ph.textContent = img.alt || 'Insert screenshot here (paste base64 or use markdown image)';
+                                ph.setAttribute('contenteditable', 'true');
+                                wrapper.appendChild(ph);
+                            }
+
+                            body.appendChild(wrapper);
+                            panel.appendChild(body);
+                            previewWrapper.appendChild(panel);
+                            foundAny = true;
+                        });
+
+                        page.appendChild(previewWrapper);
+                        break;
+                    }
+                    case 'discussion': {
+                        const discEl = document.createElement('div');
+                        discEl.className = 'discussion';
+                        discEl.setAttribute('contenteditable', 'false');
+                        discEl.setAttribute('data-field', 'discussion');
+                        const paragraphs = content.split('\n\n').filter(p => p.trim());
+                        if (paragraphs.length > 0) {
+                            paragraphs.forEach(p => {
+                                const pEl = document.createElement('p');
+                                pEl.innerHTML = p.trim().replace(/\n/g, '<br>');
+                                discEl.appendChild(pEl);
+                            });
+                        } else {
+                            discEl.innerHTML = content.replace(/\n/g, '<br>');
+                        }
+                        page.appendChild(discEl);
+                        break;
+                    }
+                }
+            });
+
+            currentMarkdown = markdown;
+            undoStack = [page.innerHTML];
+            redoStack = [];
+            applyAllStyles();
+            setTimeout(function() {
+                initGaps();
+                applyIOStylesDirect();
+                updatePrintGaps();
+            }, 200);
+        }
+
+        // ================================================================
+        // SECTION 11: TABLE HELPERS
+        // ================================================================
+        function parseTableRow(row) {
+            return row.trim()
+                .replace(/^\|/, '')
+                .replace(/\|$/, '')
+                .split('|')
+                .map(cell => cell.trim())
+                .filter(cell => cell && !cell.match(/^:?-+:?$/));
+        }
+
+        function updateLineNumbersFor(codeEl) {
+            const block = codeEl.closest('.code-block');
+            if (!block) return;
+            const numbersEl = block.querySelector('.line-numbers');
+            if (!numbersEl) return;
+            const text = codeEl.textContent || '';
+            const lines = text.split('\n');
+            const count = Math.max(lines.length, 1);
+            numbersEl.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const span = document.createElement('span');
+                span.textContent = i;
+                numbersEl.appendChild(span);
+            }
+        }
+
+        // ================================================================
+        // SECTION 12: I/O TABLE STYLING
+        // ================================================================
+        function applyIOStylesDirect() {
+            const inputFont = document.getElementById('ioInputFont')?.value || "'Fira Code', monospace";
+            const outputFont = document.getElementById('ioOutputFont')?.value || "'Roboto', sans-serif";
+            const inputSize = document.getElementById('ioInputSize')?.value || "10.5";
+            const outputSize = document.getElementById('ioOutputSize')?.value || "10.5";
+
+            document.querySelectorAll('.io-table .input-cell').forEach(cell => {
+                cell.style.fontFamily = inputFont;
+                cell.style.fontSize = inputSize + 'pt';
+                cell.style.fontWeight = '500';
+                cell.style.lineHeight = '1.0';
+                cell.style.padding = '2px 6px';
+            });
+            document.querySelectorAll('.io-table .output-cell').forEach(cell => {
+                cell.style.fontFamily = outputFont;
+                cell.style.fontSize = outputSize + 'pt';
+                cell.style.fontWeight = '500';
+                cell.style.lineHeight = '1.0';
+                cell.style.padding = '2px 6px';
+            });
+        }
+
+        function changeIOInputSize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.io-table .input-cell').forEach(el => el.style.fontSize = pt + 'pt');
+            saveAppData();
+        }
+        function changeIOOutputSize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.io-table .output-cell').forEach(el => el.style.fontSize = pt + 'pt');
+            saveAppData();
+        }
+        function changeIOInputFont(font) {
+            document.querySelectorAll('.io-table .input-cell').forEach(el => el.style.fontFamily = font);
+            saveAppData();
+        }
+        function changeIOOutputFont(font) {
+            document.querySelectorAll('.io-table .output-cell').forEach(el => el.style.fontFamily = font);
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 13: TABLE OPERATIONS (unchanged)
+        // ================================================================
+        function getTable() {
+            const el = getFocusedElement();
+            if (!el) { alert('Please click inside the table first.'); return null; }
+            const table = el.closest('.io-table');
+            if (!table) { alert('Please click inside the table first.'); return null; }
+            return table;
+        }
+
+        function addTableRow() {
+            const table = getTable();
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            const firstRow = tbody.querySelector('tr');
+            if (!firstRow) return;
+            const cells = firstRow.querySelectorAll('td:not(.col-actions)');
+            const newRow = document.createElement('tr');
+            cells.forEach((cell, index) => {
+                const td = document.createElement('td');
+                td.setAttribute('contenteditable', 'true');
+                td.className = index === 0 ? 'io-input input-cell' : 'output-cell';
+                td.textContent = 'New value';
+                newRow.appendChild(td);
+            });
+            const delTd = document.createElement('td');
+            delTd.className = 'col-actions';
+            delTd.style.width = '30px';
+            delTd.style.textAlign = 'center';
+            delTd.style.background = '#f0f0f0';
+            const delBtn = document.createElement('button');
+            delBtn.className = 'row-delete-btn';
+            delBtn.textContent = '×';
+            delBtn.onmousedown = e => e.preventDefault();
+            delBtn.onclick = function(e) {
+                e.stopPropagation();
+                if (confirm('Delete this row?')) {
+                    const row = this.closest('tr');
+                    if (row && row.parentElement.querySelectorAll('tr').length > 1) {
+                        row.remove();
+                        saveState();
+                    } else {
+                        alert('Cannot delete the last row.');
+                    }
+                }
+            };
+            delTd.appendChild(delBtn);
+            newRow.appendChild(delTd);
+            tbody.appendChild(newRow);
+            saveState();
+            setTimeout(applyIOStylesDirect, 50);
+            const status = document.getElementById('editStatus');
+            status.textContent = 'Row added!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function deleteTableRow() {
+            const table = getTable();
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            if (rows.length <= 1) { alert('Cannot delete the last row.'); return; }
+            const el = getFocusedElement();
+            const row = el ? el.closest('tr') : null;
+            if (row && row.parentElement === tbody) {
+                if (confirm('Delete this row?')) {
+                    row.remove();
+                    saveState();
+                    const status = document.getElementById('editStatus');
+                    status.textContent = 'Row deleted!';
+                    setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+                }
+            } else {
+                alert('Please click inside a row first.');
+            }
+        }
+
+        function addTableColumn() {
+            const table = getTable();
+            if (!table) return;
+            const allRows = table.querySelectorAll('tr');
+            const headerRow = allRows[0];
+            if (headerRow) {
+                const newTh = document.createElement('th');
+                newTh.setAttribute('contenteditable', 'true');
+                newTh.textContent = 'New Col';
+                headerRow.appendChild(newTh);
+            }
+            for (let i = 1; i < allRows.length; i++) {
+                const row = allRows[i];
+                const newTd = document.createElement('td');
+                newTd.setAttribute('contenteditable', 'true');
+                newTd.className = 'output-cell';
+                newTd.textContent = 'New value';
+                const delCol = row.querySelector('.col-actions');
+                if (delCol) row.insertBefore(newTd, delCol);
+                else row.appendChild(newTd);
+            }
+            saveState();
+            setTimeout(applyIOStylesDirect, 50);
+            const status = document.getElementById('editStatus');
+            status.textContent = 'Column added!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function deleteTableColumn() {
+            const table = getTable();
+            if (!table) return;
+            const allRows = table.querySelectorAll('tr');
+            const firstRow = allRows[0];
+            const headerCells = firstRow.querySelectorAll('th:not(.col-actions)');
+            if (headerCells.length <= 1) { alert('Cannot delete the last column.'); return; }
+            if (confirm('Delete the last column?')) {
+                const lastTh = firstRow.querySelector('th:not(.col-actions):last-child');
+                if (lastTh) lastTh.remove();
+                for (let i = 1; i < allRows.length; i++) {
+                    const row = allRows[i];
+                    const cells = row.querySelectorAll('td:not(.col-actions)');
+                    if (cells.length > 0) {
+                        const lastTd = cells[cells.length - 1];
+                        if (lastTd) lastTd.remove();
+                    }
+                }
+                saveState();
+                const status = document.getElementById('editStatus');
+                status.textContent = 'Column deleted!';
+                setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+            }
+        }
+
+        // ================================================================
+        // SECTION 14: GAP CONTROLS
+        // ================================================================
+        function setGapMode(mode) {
+            currentGapMode = mode;
+            const slider = document.getElementById('gapSlider');
+            const label = document.getElementById('gapSliderLabel');
+            const value = gapValues[mode] || 0;
+            slider.value = value;
+            label.textContent = value;
+            slider.className = 'mode-' + mode;
+            document.querySelectorAll('input[name="gapMode"]').forEach(r => r.checked = r.value === mode);
+            updateGapFromSlider(value);
+            saveAppData();
+        }
+
+        function updateGapFromSlider(value) {
+            const gap = parseInt(value) || 0;
+            document.getElementById('gapSliderLabel').textContent = gap;
+            gapValues[currentGapMode] = gap;
+            switch (currentGapMode) {
+                case 'section': updateSectionGap(gap); break;
+                case 'heading': updateHeadingGap(gap); break;
+                case 'paragraph': updateParagraphGap(gap); break;
+            }
+            updatePrintGaps();
+            saveAppData();
+        }
+
+        function updateSectionGap(value) {
+            const gap = parseInt(value) || 0;
+            document.querySelectorAll('.section-title:not(:first-of-type)').forEach(el => el.style.marginTop = gap + 'px');
+            document.querySelectorAll('.section-title:first-of-type').forEach(el => el.style.marginTop = Math.max(0, Math.floor(gap / 2)) + 'px');
+        }
+
+        function updateHeadingGap(value) {
+            const gap = parseInt(value) || 0;
+            document.querySelectorAll('.section-title + .problem-statement, .section-title + .algorithm, .section-title + .code-container, .section-title + .io-table, .section-title + .discussion')
+                .forEach(el => el.style.marginTop = gap + 'px');
+        }
+
+        function updateParagraphGap(value) {
+            const gap = parseInt(value) || 0;
+            document.querySelectorAll('.discussion p, .problem-statement p').forEach(el => el.style.marginTop = gap + 'px');
+            document.querySelectorAll('.discussion p + p, .problem-statement p + p').forEach(el => el.style.marginTop = gap + 'px');
+        }
+
+        function resetGaps() {
+            gapValues = { section: 12, heading: 0, paragraph: 2 };
+            const slider = document.getElementById('gapSlider');
+            const value = gapValues[currentGapMode];
+            slider.value = value;
+            document.getElementById('gapSliderLabel').textContent = value;
+            updateGapFromSlider(value);
+            updatePrintGaps();
+            saveAppData();
+            const status = document.getElementById('editStatus');
+            status.textContent = '🔄 Gaps reset!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function initGaps() {
+            gapValues = { section: 12, heading: 0, paragraph: 2 };
+            setGapMode('section');
+            updateSectionGap(gapValues.section);
+            updateHeadingGap(gapValues.heading);
+            updateParagraphGap(gapValues.paragraph);
+            updatePrintGaps();
+        }
+
+        function updatePrintGaps() {
+            const sectionGap = gapValues.section || 12;
+            const headingGap = gapValues.heading || 0;
+            const paragraphGap = gapValues.paragraph || 2;
+            let styleTag = document.getElementById('printGapStyles');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'printGapStyles';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.textContent = `
+                @media print {
+                    .section-title:not(:first-of-type) { margin-top: ${sectionGap}px !important; }
+                    .section-title:first-of-type { margin-top: ${Math.max(0, Math.floor(sectionGap / 2))}px !important; }
+                    .section-title + .problem-statement,
+                    .section-title + .algorithm,
+                    .section-title + .code-container,
+                    .section-title + .io-table,
+                    .section-title + .discussion { margin-top: ${headingGap}px !important; }
+                    .discussion p, .problem-statement p { margin-top: ${paragraphGap}px !important; }
+                    .discussion p + p, .problem-statement p + p { margin-top: ${paragraphGap}px !important; }
+                }
+            `;
+        }
+
+        // ================================================================
+        // SECTION 15: FONT WEIGHT
+        // ================================================================
+        function applyWeight(weight) {
+            const el = getFocusedElement();
+            if (!el) { alert('Please click inside a text section first.'); return; }
+            el.classList.remove('weight-thin', 'weight-light', 'weight-regular', 'weight-medium', 'weight-bold', 'weight-black');
+            const map = { '100': 'weight-thin', '300': 'weight-light', '400': 'weight-regular', '500': 'weight-medium', '700': 'weight-bold', '900': 'weight-black' };
+            if (map[weight]) el.classList.add(map[weight]);
+            document.querySelectorAll('.weight-controls button').forEach(btn => btn.classList.remove('active-weight'));
+            const names = { '100': 'Thin', '300': 'Light', '400': 'Reg', '500': 'Med', '700': 'Bold', '900': 'Black' };
+            document.querySelectorAll('.weight-controls button').forEach(btn => {
+                if (btn.textContent === names[weight]) btn.classList.add('active-weight');
+            });
+            saveState();
+            const status = document.getElementById('editStatus');
+            status.textContent = 'Weight: ' + names[weight];
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        // ================================================================
+        // SECTION 16: SIZE FUNCTIONS
+        // ================================================================
+        function changeOverallSize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.header, .section-title, .problem-statement, .algorithm, .discussion, .io-table td, .io-table th, .code-content, .line-numbers')
+                .forEach(el => {
+                    if (el.classList.contains('input-cell') || el.classList.contains('output-cell')) return;
+                    el.style.fontSize = pt + 'pt';
+                });
+            document.body.style.fontSize = pt + 'pt';
+            saveAppData();
+        }
+        function changeHeadSize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.header').forEach(el => el.style.fontSize = pt + 'pt');
+            saveAppData();
+        }
+        function changeBodySize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.section-title, .problem-statement, .algorithm, .discussion, .io-table th')
+                .forEach(el => el.style.fontSize = pt + 'pt');
+            saveAppData();
+        }
+        function changeCodeSize(size) {
+            const pt = parseFloat(size);
+            document.querySelectorAll('.code-content, .line-numbers').forEach(el => el.style.fontSize = pt + 'pt');
+            saveAppData();
+        }
+        function changeSpecificSize(size) {
+            const pt = parseFloat(size);
+            if (focusedSectionType) {
+                const map = { 'code-content': '.code-content', 'algorithm': '.algorithm', 'io-table': '.io-table td, .io-table th', 'problem-statement': '.problem-statement', 'discussion': '.discussion', 'text': '[data-field]' };
+                const selector = map[focusedSectionType] || '[data-field]';
+                document.querySelectorAll(selector).forEach(el => el.style.fontSize = pt + 'pt');
+            }
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 17: FONT FUNCTIONS
+        // ================================================================
+        function changeHeadingFont(font) {
+            document.querySelectorAll('.header, .section-title, .io-table th').forEach(el => el.style.fontFamily = font);
+            saveAppData();
+        }
+        function changeBodyFont(font) {
+            document.querySelectorAll('.problem-statement, .algorithm, .discussion, .io-table td:not(.input-cell):not(.output-cell)')
+                .forEach(el => { if (!el.closest('.code-container')) el.style.fontFamily = font; });
+            saveAppData();
+        }
+        function changeCodeFont(font) {
+            document.querySelectorAll('.code-content, .line-numbers').forEach(el => el.style.fontFamily = font);
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 18: PAGE MARGINS
+        // ================================================================
+        function updatePageMargins() {
+            const top = document.getElementById('marginTop')?.value || '12';
+            const right = document.getElementById('marginRight')?.value || '14';
+            const bottom = document.getElementById('marginBottom')?.value || '12';
+            const left = document.getElementById('marginLeft')?.value || '14';
+
+            // Screen preview padding
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.padding = top + 'mm ' + right + 'mm ' + bottom + 'mm ' + left + 'mm';
+            });
+
+            // Print margins via @page (this is what actually controls printed page margins)
+            let styleTag = document.getElementById('dynamicPrintMargins');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamicPrintMargins';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.textContent = `
+                @page {
+                    size: A4 portrait;
+                    margin: ${top}mm ${right}mm ${bottom}mm ${left}mm !important;
+                }
+            `;
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 19: IMPORT / EXPORT
+        // ================================================================
+        function importMarkdown() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.md,.markdown,.txt';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const markdown = e.target.result;
+                    try {
+                        renderAssignment(markdown);
+                        currentMarkdown = markdown;
+                        saveAppData();
+                        const status = document.getElementById('editStatus');
+                        status.textContent = '✅ Imported!';
+                        setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 2000);
+                    } catch (error) {
+                        alert('Error importing markdown: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function downloadTemplate() {
+            const template = `# Assignment 1
+---
+
+### QUESTION
+Write your question / problem statement here.
+
+### SOURCE CODE
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment</title>
+  <style>
+    /* internal CSS example */
+    .card { border: 1px solid black; padding: 12pt; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- content -->
+  </div>
+</body>
+</html>
+\`\`\`
+
+### PREVIEW
+![Screenshot 1](data:image/png;base64,PLACEHOLDER_BASE64_HERE)
+
+---Img---
+
+![Screenshot 2](path/or/another/base64)
+
+### DISCUSSION
+Write your discussion here. You can use **bold** or *italic* text.
+
+You can also add multiple paragraphs.
+
+***`;
+
+            const blob = new Blob([template], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'assignment_template.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            const status = document.getElementById('editStatus');
+            status.textContent = '📄 Template downloaded!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 2000);
+        }
+
+        // ================================================================
+        // SECTION 19.5: IMAGE UPLOAD → BASE64 CONVERTER + PREVIEW INSERT
+        // ================================================================
+        function triggerImageUpload() {
+            document.getElementById('imageUploadInput').click();
+        }
+
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            const status = document.getElementById('editStatus');
+            status.textContent = '⏳ Converting image(s)…';
+
+            let processed = 0;
+            const total = files.length;
+            const newImages = [];
+
+            Array.from(files).forEach((file, index) => {
+                if (!file.type.startsWith('image/')) {
+                    processed++;
+                    if (processed === total) finishImageUpload(newImages);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result; // full data:image/...;base64,...
+                    newImages.push({
+                        alt: file.name.replace(/\.[^/.]+$/, '') || `Screenshot ${index + 1}`,
+                        src: dataUrl
+                    });
+                    processed++;
+                    if (processed === total) {
+                        finishImageUpload(newImages);
+                    }
+                };
+                reader.onerror = function() {
+                    console.warn('Failed to read file:', file.name);
+                    processed++;
+                    if (processed === total) finishImageUpload(newImages);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Reset input so the same file can be selected again later
+            event.target.value = '';
+        }
+
+        function finishImageUpload(newImages) {
+            if (newImages.length === 0) {
+                alert('No valid images selected.');
+                document.getElementById('editStatus').textContent = editMode ? 'Edit ON' : 'View';
+                return;
+            }
+
+            // 1. Insert into the live DOM (PREVIEW section)
+            insertImagesIntoPreview(newImages);
+
+            // 2. Also append to currentMarkdown so it survives re-render / save
+            appendImagesToMarkdown(newImages);
+
+            saveState();
+            saveAppData();
+
+            const status = document.getElementById('editStatus');
+            status.textContent = `✅ ${newImages.length} image(s) added to PREVIEW`;
+            setTimeout(() => {
+                status.textContent = editMode ? 'Edit ON' : 'View';
+            }, 2500);
+        }
+
+        function insertImagesIntoPreview(images) {
+            const page = document.getElementById('pageContent');
+            let previewWrapper = page.querySelector('.preview-section');
+
+            // If PREVIEW section does not exist yet, create the title + wrapper
+            if (!previewWrapper) {
+                const discTitle = Array.from(page.querySelectorAll('.section-title'))
+                    .find(el => el.textContent.trim() === 'DISCUSSION');
+                const sourceTitle = Array.from(page.querySelectorAll('.section-title'))
+                    .find(el => el.textContent.trim() === 'SOURCE');
+
+                const titleEl = document.createElement('div');
+                titleEl.className = 'section-title';
+                titleEl.setAttribute('contenteditable', 'false');
+                titleEl.setAttribute('data-field', 'heading-preview');
+                titleEl.textContent = 'PREVIEW';
+
+                previewWrapper = document.createElement('div');
+                previewWrapper.className = 'preview-section';
+                previewWrapper.setAttribute('data-field', 'preview');
+                previewWrapper.style.display = 'flex';
+                previewWrapper.style.flexDirection = 'column';
+                previewWrapper.style.gap = '12pt';
+                previewWrapper.style.margin = '4pt 0 8pt 0';
+
+                if (discTitle) {
+                    page.insertBefore(titleEl, discTitle);
+                    page.insertBefore(previewWrapper, discTitle);
+                } else if (sourceTitle) {
+                    let insertAfter = sourceTitle.nextElementSibling;
+                    while (insertAfter && (insertAfter.classList.contains('code-container') || insertAfter.classList.contains('code-terminal-wrapper'))) {
+                        insertAfter = insertAfter.nextElementSibling;
+                    }
+                    if (insertAfter) {
+                        page.insertBefore(titleEl, insertAfter);
+                        page.insertBefore(previewWrapper, insertAfter);
+                    } else {
+                        page.appendChild(titleEl);
+                        page.appendChild(previewWrapper);
+                    }
+                } else {
+                    page.appendChild(titleEl);
+                    page.appendChild(previewWrapper);
+                }
+            }
+
+            // Keep any EXISTING real images (already have <img src="data:...">)
+            const keptImages = [];
+            previewWrapper.querySelectorAll('.image-panel img[src]').forEach(imgEl => {
+                if (imgEl.src && imgEl.src.startsWith('data:image/')) {
+                    keptImages.push({
+                        alt: imgEl.alt || 'Screenshot',
+                        src: imgEl.src
+                    });
+                }
+            });
+
+            // Merge: old real images + newly uploaded ones
+            const allImages = keptImages.concat(images);
+
+            // COMPLETELY clear the preview section and rebuild
+            previewWrapper.innerHTML = '';
+
+            allImages.forEach((img, idx) => {
+                const panel = document.createElement('div');
+                panel.className = 'image-panel';
+                panel.style.cssText = 'border:1.4px solid #333; background:#fff; display:flex; flex-direction:column; page-break-inside:avoid; break-inside:avoid;';
+
+                const header = document.createElement('div');
+                header.className = 'code-header';
+                header.style.cssText = 'background:#ececec; padding:3px 9px; font-size:8.5pt; border-bottom:1px solid #ccc;';
+                header.innerHTML = `<span>Website Output ${idx + 1}</span>`;
+                panel.appendChild(header);
+
+                const body = document.createElement('div');
+                body.style.cssText = 'padding:10pt; display:flex; justify-content:center; align-items:center; page-break-inside:avoid; break-inside:avoid;';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'website-image-wrapper';
+                wrapper.style.cssText = 'border:1px solid #ccc; padding:6pt; max-width:100%; background:#fff; page-break-inside:avoid; break-inside:avoid;';
+
+                const imageEl = document.createElement('img');
+                imageEl.src = img.src;
+                imageEl.alt = img.alt || ('Screenshot ' + (idx + 1));
+                imageEl.style.cssText = 'display:block; max-width:100%; height:auto; object-fit:contain; page-break-inside:avoid; break-inside:avoid;';
+                imageEl.dataset.base64 = img.src;
+
+                wrapper.appendChild(imageEl);
+                body.appendChild(wrapper);
+                panel.appendChild(body);
+                previewWrapper.appendChild(panel);
+            });
+
+            // Safety: if somehow no images, put a single empty placeholder back
+            if (allImages.length === 0) {
+                const panel = document.createElement('div');
+                panel.className = 'image-panel';
+                panel.style.cssText = 'border:1.4px solid #333; background:#fff; display:flex; flex-direction:column; page-break-inside:avoid;';
+                const header = document.createElement('div');
+                header.className = 'code-header';
+                header.style.cssText = 'background:#ececec; padding:3px 9px; font-size:8.5pt; border-bottom:1px solid #ccc;';
+                header.innerHTML = '<span>Website Output</span>';
+                panel.appendChild(header);
+                const body = document.createElement('div');
+                body.style.cssText = 'padding:10pt; display:flex; justify-content:center; align-items:center;';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'website-image-wrapper';
+                wrapper.style.cssText = 'border:1px solid #ccc; padding:6pt; max-width:100%; background:#fff;';
+                const ph = document.createElement('div');
+                ph.style.cssText = 'width:100%; min-height:120px; background:#f5f5f5; display:flex; align-items:center; justify-content:center; color:#666; font-style:italic;';
+                ph.textContent = 'Upload an image using the 📷 button';
+                wrapper.appendChild(ph);
+                body.appendChild(wrapper);
+                panel.appendChild(body);
+                previewWrapper.appendChild(panel);
+            }
+        }
+
+        function appendImagesToMarkdown(images) {
+            // Append markdown image lines under ### PREVIEW
+            let md = currentMarkdown || '';
+
+            const imgLines = images.map(img => `![${img.alt}](${img.src})`).join('\n\n');
+
+            if (md.match(/###\s+PREVIEW/i)) {
+                // Insert before the next ### or at the end of the PREVIEW section
+                md = md.replace(/(###\s+PREVIEW\s*\n)([\s\S]*?)(?=\n###\s+|\n\*\*\*|$)/i, (match, header, body) => {
+                    // Remove pure placeholder markers if present
+                    let cleaned = body.replace(/---Img---/gi, '').trim();
+                    if (cleaned) cleaned += '\n\n';
+                    return header + cleaned + imgLines + '\n';
+                });
+            } else {
+                // No PREVIEW section yet – add one before DISCUSSION or at the end
+                const previewBlock = `\n\n### PREVIEW\n${imgLines}\n`;
+                if (md.match(/###\s+DISCUSSION/i)) {
+                    md = md.replace(/(###\s+DISCUSSION)/i, previewBlock + '\n$1');
+                } else {
+                    md = md.trim() + previewBlock;
+                }
+            }
+
+            currentMarkdown = md;
+        }
+
+        // ================================================================
+        // SECTION 20: CONTEXT & FOCUS
+        // ================================================================
+        function updateContext(element) {
+            const toolbar = document.getElementById('toolbar');
+            const contextHint = document.getElementById('contextHint');
+            const contextName = document.getElementById('contextName');
+            const specificSizeGroup = document.getElementById('specificSizeGroup');
+            const ioSizeGroup = document.getElementById('ioSizeGroup');
+            const ioFontGroup = document.getElementById('ioFontGroup');
+
+            document.querySelectorAll('.context-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (!element) {
+                toolbar.classList.remove('context-active');
+                contextHint.classList.remove('active');
+                specificSizeGroup.style.display = 'none';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+                focusedSectionType = null;
+                return;
+            }
+
+            const isCode = element.classList.contains('code-content');
+            const isAlgorithm = element.classList.contains('algorithm');
+            const isTable = element.closest('.io-table') !== null;
+            const isProblem = element.closest('.problem-statement') !== null;
+            const isDiscussion = element.closest('.discussion') !== null;
+            const isTextElement = element.closest('[data-field]') !== null && !isCode && !isAlgorithm && !isTable;
+            const isRendered = element.classList.contains('rendered-markdown');
+
+            toolbar.classList.add('context-active');
+            contextHint.classList.add('active');
+
+            if (isCode) {
+                focusedSectionType = 'code-content';
+                contextName.textContent = 'Code';
+                document.getElementById('ctxFormatC').classList.add('active');
+                specificSizeGroup.style.display = 'flex';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+                if (isRendered) document.getElementById('ctxUnrenderMD').classList.add('active');
+            } else if (isAlgorithm) {
+                focusedSectionType = 'algorithm';
+                contextName.textContent = 'Algorithm';
+                document.getElementById('ctxFormatAlgo').classList.add('active');
+                specificSizeGroup.style.display = 'flex';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+            } else if (isTable) {
+                focusedSectionType = 'io-table';
+                contextName.textContent = 'Table';
+                document.getElementById('ctxAddRow').classList.add('active');
+                document.getElementById('ctxDeleteRow').classList.add('active');
+                document.getElementById('ctxAddCol').classList.add('active');
+                document.getElementById('ctxDeleteCol').classList.add('active');
+                specificSizeGroup.style.display = 'none';
+                ioSizeGroup.style.display = 'flex';
+                ioFontGroup.style.display = 'flex';
+            } else if (isProblem) {
+                focusedSectionType = 'problem-statement';
+                contextName.textContent = 'Problem';
+                document.getElementById('ctxRenderMD').classList.add('active');
+                if (isRendered) document.getElementById('ctxUnrenderMD').classList.add('active');
+                specificSizeGroup.style.display = 'flex';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+            } else if (isDiscussion) {
+                focusedSectionType = 'discussion';
+                contextName.textContent = 'Discussion';
+                document.getElementById('ctxRenderMD').classList.add('active');
+                if (isRendered) document.getElementById('ctxUnrenderMD').classList.add('active');
+                specificSizeGroup.style.display = 'flex';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+            } else if (isTextElement) {
+                focusedSectionType = 'text';
+                contextName.textContent = 'Text';
+                document.getElementById('ctxRenderMD').classList.add('active');
+                if (isRendered) document.getElementById('ctxUnrenderMD').classList.add('active');
+                specificSizeGroup.style.display = 'flex';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+            } else {
+                focusedSectionType = null;
+                specificSizeGroup.style.display = 'none';
+                ioSizeGroup.style.display = 'none';
+                ioFontGroup.style.display = 'none';
+            }
+
+            document.getElementById('ctxAlignLeft').classList.add('active');
+            document.getElementById('ctxAlignCenter').classList.add('active');
+            document.getElementById('ctxAlignRight').classList.add('active');
+            document.getElementById('ctxAlignJustify').classList.add('active');
+        }
+
+        function getFocusedElement() {
+            const active = document.activeElement;
+            if (active && (active.matches('[contenteditable="true"]') || active.matches('[data-field]'))) return active;
+            if (lastFocusedElement && document.contains(lastFocusedElement)) return lastFocusedElement;
+            const editable = document.querySelector('[contenteditable="true"]');
+            if (editable) { editable.focus(); lastFocusedElement = editable; return editable; }
+            return null;
+        }
+
+        // ================================================================
+        // SECTION 21: CONTEXT BUTTON ACTIONS
+        // ================================================================
+        function formatFocusedC() {
+            const el = getFocusedElement();
+            if (!el || !el.classList.contains('code-content')) { alert('Please click inside the code editor first.'); return; }
+            const formatted = formatCCode(el.textContent);
+            el.textContent = formatted;
+            updateLineNumbersFor(el);
+            saveState();
+            const status = document.getElementById('editStatus');
+            status.textContent = '✅ HTML formatted!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function formatAlgorithm() {
+            const el = getFocusedElement();
+            if (!el || !el.classList.contains('algorithm')) { alert('Please click inside the algorithm section first.'); return; }
+            const formatted = formatAlgorithm(el.textContent);
+            el.textContent = formatted;
+            saveState();
+            const status = document.getElementById('editStatus');
+            status.textContent = '✅ Algorithm formatted!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function renderFocusedMarkdown() {
+            const el = getFocusedElement();
+            if (!el) { alert('Please click inside a text section first.'); return; }
+            const text = el.textContent;
+            const rendered = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+            el.innerHTML = rendered;
+            el.classList.add('rendered-markdown');
+            el.setAttribute('data-markdown-rendered', 'true');
+            saveState();
+            const status = document.getElementById('editStatus');
+            status.textContent = '✨ Markdown rendered!';
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        function unrenderFocusedMarkdown() {
+            const el = getFocusedElement();
+            if (!el) { alert('Please click inside a rendered text section first.'); return; }
+            if (!el.classList.contains('rendered-markdown')) { alert('This section is not rendered markdown.'); return; }
+            const original = el.getAttribute('data-markdown-original');
+            if (original) {
+                el.textContent = original;
+                el.classList.remove('rendered-markdown');
+                el.removeAttribute('data-markdown-rendered');
+                el.removeAttribute('data-markdown-original');
+                saveState();
+                const status = document.getElementById('editStatus');
+                status.textContent = '↩️ Markdown unrendered!';
+                setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+            } else {
+                alert('No original markdown text found.');
+            }
+        }
+
+        function alignText(alignment) {
+            const el = getFocusedElement();
+            if (!el) { alert('Please click inside a text section first.'); return; }
+            el.classList.remove('text-left', 'text-center', 'text-right', 'text-justify');
+            el.classList.add('text-' + alignment);
+            saveState();
+            const status = document.getElementById('editStatus');
+            status.textContent = '📐 Aligned ' + alignment;
+            setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 1500);
+        }
+
+        // ================================================================
+        // SECTION 22: TOOLBAR ZOOM
+        // ================================================================
+        function zoomToolbar(delta) {
+            toolbarZoom = Math.max(0.5, Math.min(2.0, toolbarZoom + delta));
+            document.getElementById('toolbar').style.transform = 'scale(' + toolbarZoom + ')';
+            document.getElementById('toolbar').style.transformOrigin = 'top right';
+            document.getElementById('zoomLevel').textContent = Math.round(toolbarZoom * 100) + '%';
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 22.5: SIDE-BY-SIDE / TERMINAL MODE
+        // ================================================================
+        function toggleSideBySide() {
+            sideBySideMode = !sideBySideMode;
+            const btn = document.getElementById('btnSideBySide');
+            const page = document.getElementById('pageContent');
+            if (sideBySideMode) {
+                btn.textContent = 'Classic Mode';
+                btn.style.background = '#2e7d32';
+                page.classList.add('side-by-side-active');
+            } else {
+                btn.textContent = 'Side-by-Side';
+                btn.style.background = '#6a1b9a';
+                page.classList.remove('side-by-side-active');
+            }
+            // Re-render to apply layout
+            renderAssignment(currentMarkdown);
+            // Restore edit mode if it was on
+            if (editMode) {
+                setTimeout(() => {
+                    document.querySelectorAll('[data-field], .code-content, .io-table td, .io-table th, .terminal-content').forEach(el => {
+                        el.setAttribute('contenteditable', 'true');
+                    });
+                    document.querySelectorAll('.page-break-wrapper').forEach(el => {
+                        el.setAttribute('contenteditable', 'false');
+                    });
+                }, 100);
+            }
+            saveAppData();
+            const status = document.getElementById('editStatus');
+            status.textContent = sideBySideMode ? '🖥 Side-by-Side ON' : '📄 Classic Mode';
+            setTimeout(() => {
+                status.textContent = editMode ? 'Edit ON' : 'View';
+            }, 1800);
+        }
+
+        function updateCodeTerminalSplit(value) {
+            codeTerminalSplit = parseInt(value) || 68;
+            const valLabel = document.getElementById('splitValueLabel');
+            if (valLabel) valLabel.textContent = codeTerminalSplit + '%';
+            const codePane = document.querySelector('.code-pane');
+            const termPane = document.querySelector('.terminal-pane');
+            if (codePane && termPane) {
+                codePane.style.width = codeTerminalSplit + '%';
+                codePane.style.flex = 'none';
+                termPane.style.width = (100 - codeTerminalSplit) + '%';
+                termPane.style.flex = 'none';
+            }
+            saveAppData();
+        }
+
+        function buildTerminalText(ioContent) {
+            // Convert markdown table or raw I/O text into a terminal transcript
+            if (!ioContent) return 'No input/output available.';
+
+            const lines = ioContent.split('\n').filter(l => l.trim());
+            // Detect if it is a markdown table
+            const tableRows = lines.filter(l => l.trim().startsWith('|'));
+            if (tableRows.length >= 2) {
+                // Parse table: assume first data row after header has Input | Output
+                let terminal = '';
+                for (let i = 2; i < tableRows.length; i++) {
+                    const cells = parseTableRow(tableRows[i]);
+                    if (cells.length >= 1) {
+                        // Input cell may already contain multi-line prompts
+                        const inputText = cells[0].replace(/<br\s*\/?>/gi, '\n').replace(/&nbsp;/g, ' ').trim();
+                        terminal += inputText + '\n';
+                    }
+                    if (cells.length >= 2) {
+                        const outputText = cells[1].replace(/<br\s*\/?>/gi, '\n').replace(/&nbsp;/g, ' ').trim();
+                        if (outputText) terminal += outputText + '\n';
+                    }
+                }
+                return terminal.trim() || 'No sample I/O.';
+            }
+
+            // Fallback: treat whole content as terminal text
+            return ioContent.replace(/<br\s*\/?>/gi, '\n').trim();
+        }
+
+        function createSideBySideBlock(codeContent, ioContent) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-terminal-wrapper';
+            wrapper.setAttribute('data-side-by-side', 'true');
+
+            // Slider controls
+            const controls = document.createElement('div');
+            controls.className = 'split-controls';
+            controls.innerHTML = `
+                <label>Code width</label>
+                <input type="range" id="codeSplitSlider" min="40" max="85" value="${codeTerminalSplit}" 
+                       oninput="updateCodeTerminalSplit(this.value)">
+                <span class="split-value" id="splitValueLabel">${codeTerminalSplit}%</span>
+            `;
+            wrapper.appendChild(controls);
+
+            // Body (two panes)
+            const body = document.createElement('div');
+            body.className = 'code-terminal-body';
+
+            // --- CODE PANE ---
+            const codePane = document.createElement('div');
+            codePane.className = 'code-pane';
+            codePane.style.width = codeTerminalSplit + '%';
+            codePane.style.flex = 'none';
+
+            const codeHeader = document.createElement('div');
+            codeHeader.className = 'code-header';
+            codeHeader.innerHTML = `<span>C Source Code</span>`;
+            codePane.appendChild(codeHeader);
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+
+            const lineNumbers = document.createElement('div');
+            lineNumbers.className = 'line-numbers';
+            codeBlock.appendChild(lineNumbers);
+
+            const codeEl = document.createElement('div');
+            codeEl.className = 'code-content';
+            codeEl.setAttribute('contenteditable', 'false');
+            codeEl.setAttribute('data-field', 'source');
+            codeEl.setAttribute('spellcheck', 'false');
+            codeEl.textContent = codeContent;
+            codeBlock.appendChild(codeEl);
+
+            codePane.appendChild(codeBlock);
+            body.appendChild(codePane);
+
+            // --- TERMINAL PANE ---
+            const termPane = document.createElement('div');
+            termPane.className = 'terminal-pane';
+            termPane.style.width = (100 - codeTerminalSplit) + '%';
+            termPane.style.flex = 'none';
+
+            const termHeader = document.createElement('div');
+            termHeader.className = 'terminal-header';
+            termHeader.innerHTML = `<span>INPUT / OUTPUT</span>`;
+            termPane.appendChild(termHeader);
+
+            const termContent = document.createElement('div');
+            termContent.className = 'terminal-content';
+            termContent.setAttribute('contenteditable', 'false');
+            termContent.setAttribute('data-field', 'terminal');
+            termContent.setAttribute('spellcheck', 'false');
+            termContent.textContent = buildTerminalText(ioContent);
+            termPane.appendChild(termContent);
+
+            body.appendChild(termPane);
+            wrapper.appendChild(body);
+
+            // Update line numbers after insert
+            setTimeout(() => updateLineNumbersFor(codeEl), 20);
+
+            return wrapper;
+        }
+
+        // ================================================================
+        // SECTION 23: EDIT MODE TOGGLE
+        // ================================================================
+        function toggleEdit() {
+            editMode = !editMode;
+            const btn = document.getElementById('btnEdit');
+            const status = document.getElementById('editStatus');
+            if (editMode) {
+                btn.textContent = 'Disable Edit';
+                btn.style.background = '#ef6c00';
+                status.textContent = '✏️ Edit ON';
+
+                status.style.color = '#81c784';
+                document.getElementById('pageContent').classList.add('edit-mode');
+                document.querySelectorAll('[data-field], .code-content, .io-table td, .io-table th, .terminal-content').forEach(el => {
+                    el.setAttribute('contenteditable', 'true');
+                });
+                document.querySelectorAll('.page-break-wrapper').forEach(el => {
+                    el.setAttribute('contenteditable', 'false');
+                });
+            } else {
+                btn.textContent = 'Enable Edit';
+                btn.style.background = '#2e7d32';
+                status.textContent = '👁️ View';
+                status.style.color = '#bbb';
+                document.getElementById('pageContent').classList.remove('edit-mode');
+                document.querySelectorAll('[data-field], .code-content, .io-table td, .io-table th, .terminal-content').forEach(el => {
+                    el.setAttribute('contenteditable', 'false');
+                });
+            }
+
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 24: TOGGLE OPTIONS
+        // ================================================================
+        function togglePreserveFormat() {
+            document.getElementById('pageContent').classList.toggle('preserve-format', document.getElementById('preserveFormat').checked);
+            saveAppData();
+        }
+        function toggleCodeWrap() {
+            document.getElementById('pageContent').classList.toggle('wrap-code', document.getElementById('wrapCode').checked);
+            saveAppData();
+        }
+        function toggleBodyWrap() {
+            document.getElementById('pageContent').classList.toggle('wrap-body', document.getElementById('wrapBody').checked);
+            saveAppData();
+        }
+
+        // ================================================================
+        // SECTION 25: RESET
+        // ================================================================
+        function resetContent() {
+            if (confirm('Reset to default content? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                undoStack = [];
+                redoStack = [];
+                renderAssignment(DEFAULT_MARKDOWN);
+                currentMarkdown = DEFAULT_MARKDOWN;
+                const status = document.getElementById('editStatus');
+                status.textContent = '🔄 Reset!';
+                setTimeout(() => status.textContent = editMode ? 'Edit ON' : 'View', 2000);
+            }
+        }
+
+        // ================================================================
+        // SECTION 26: APPLY ALL STYLES
+        // ================================================================
+        function applyAllStyles() {
+            const headingFont = document.getElementById('headingFont')?.value || "'Montserrat', sans-serif";
+            const bodyFont = document.getElementById('bodyFont')?.value || "'Merriweather', serif";
+            const codeFont = document.getElementById('codeFont')?.value || "'Google Sans Code', monospace";
+            changeHeadingFont(headingFont);
+            changeBodyFont(bodyFont);
+            changeCodeFont(codeFont);
+            const overallSize = document.getElementById('overallSize')?.value || "11";
+            const headSize = document.getElementById('headSize')?.value || "15.5";
+            const bodySize = document.getElementById('bodySize')?.value || "11";
+            const codeSize = document.getElementById('codeSize')?.value || "11";
+            changeOverallSize(overallSize);
+            changeHeadSize(headSize);
+            changeBodySize(bodySize);
+            changeCodeSize(codeSize);
+            updatePageMargins();
+            setTimeout(() => {
+                initGaps();
+                applyIOStylesDirect();
+                updatePrintGaps();
+            }, 100);
+        }
+
+        function saveSettings() {
+            saveAppData();
+            updatePrintGaps();
+            alert('✅ Settings saved!');
+        }
+
+        // ================================================================
+        // SECTION 27: DRAG HANDLE
+        // ================================================================
+        let isDragging = false, startX, startY, initialLeft, initialTop;
+        const toolbar = document.getElementById('toolbar');
+        const dragHandle = document.getElementById('dragHandle');
+
+        dragHandle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            toolbar.classList.add('dragging');
+            const rect = toolbar.getBoundingClientRect();
+            startX = e.clientX; startY = e.clientY;
+            initialLeft = rect.left; initialTop = rect.top;
+            toolbar.style.right = 'auto';
+            toolbar.style.left = initialLeft + 'px';
+            toolbar.style.top = initialTop + 'px';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            let newLeft = initialLeft + (e.clientX - startX);
+            let newTop = initialTop + (e.clientY - startY);
+            newLeft = Math.max(4, Math.min(newLeft, window.innerWidth - toolbar.offsetWidth - 4));
+            newTop = Math.max(4, Math.min(newTop, window.innerHeight - toolbar.offsetHeight - 4));
+            toolbar.style.left = newLeft + 'px';
+            toolbar.style.top = newTop + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                toolbar.classList.remove('dragging');
+                saveAppData();
+            }
+        });
+
+        dragHandle.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            isDragging = true;
+            toolbar.classList.add('dragging');
+            const rect = toolbar.getBoundingClientRect();
+            startX = t.clientX; startY = t.clientY;
+            initialLeft = rect.left; initialTop = rect.top;
+            toolbar.style.right = 'auto';
+            toolbar.style.left = initialLeft + 'px';
+            toolbar.style.top = initialTop + 'px';
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const t = e.touches[0];
+            let newLeft = initialLeft + (t.clientX - startX);
+            let newTop = initialTop + (t.clientY - startY);
+            newLeft = Math.max(4, Math.min(newLeft, window.innerWidth - toolbar.offsetWidth - 4));
+            newTop = Math.max(4, Math.min(newTop, window.innerHeight - toolbar.offsetHeight - 4));
+            toolbar.style.left = newLeft + 'px';
+            toolbar.style.top = newTop + 'px';
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                toolbar.classList.remove('dragging');
+                saveAppData();
+            }
+        });
+
+        // ================================================================
+        // SECTION 28: KEYBOARD SHORTCUTS
+        // ================================================================
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); toggleEdit(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                if (e.shiftKey) redoAction();
+                else undoAction();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveSettings(); }
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                insertPageBreak();
+            }
+        });
+
+        // ================================================================
+        // SECTION 29: EVENT LISTENERS
+        // ================================================================
+        document.addEventListener('focusin', function(e) {
+            if (e.target && (e.target.matches('[contenteditable="true"]') || e.target.matches('[data-field]'))) {
+                document.querySelectorAll('.editor-active').forEach(el => el.classList.remove('editor-active'));
+                e.target.classList.add('editor-active');
+                lastFocusedElement = e.target;
+                updateContext(e.target);
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            const target = e.target;
+            const isEditable = target.matches('[contenteditable="true"]') ||
+                               target.matches('[data-field]') ||
+                               target.closest('[contenteditable="true"]') ||
+                               target.closest('[data-field]');
+            const isToolbar = target.closest('.toolbar');
+            if (!isEditable && !isToolbar) {
+                updateContext(null);
+                document.querySelectorAll('.editor-active').forEach(el => el.classList.remove('editor-active'));
+                lastFocusedElement = null;
+            }
+        });
+
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('code-content')) {
+                updateLineNumbersFor(e.target);
+            }
+            if (e.target && (e.target.matches('[contenteditable="true"]') || e.target.matches('[data-field]'))) {
+                saveState();
+            }
+        });
+
+        // ================================================================
+        // SECTION 30: INIT
+        // ================================================================
+        function init() {
+            populateFontSelectors();
+            const hasSavedData = loadAppData();
+            if (!hasSavedData) {
+                renderAssignment(DEFAULT_MARKDOWN);
+            } else {
+                const currentContent = document.getElementById('pageContent').innerHTML;
+                if (undoStack.length === 0 && currentContent) {
+                    undoStack = [currentContent];
+                }
+                setTimeout(() => {
+                    applyAllStyles();
+                    applyIOStylesDirect();
+                    initGaps();
+                    updatePrintGaps();
+                    updatePageMargins();
+                    // If side-by-side mode was saved, re-render so layout is correct
+                    if (sideBySideMode) {
+                        renderAssignment(currentMarkdown);
+                    }
+                }, 200);
+            }
+            // Always apply margins (both screen padding and @page rule)
+            setTimeout(updatePageMargins, 300);
+
+            // Re-apply margins just before the browser opens the print dialog
+            window.addEventListener('beforeprint', function() {
+                updatePageMargins();
+            });
+
+            console.log('📝 Assignment Editor loaded (Web-Dev mode + Image Upload)');
+            console.log('💡 Use 📷 Upload Image to add screenshots to PREVIEW');
+            console.log('💡 Page breaks: only from <page-break> in markdown or via button (Ctrl+Shift+P)');
+        }
+
+
+        window.addEventListener('beforeunload', function() {
+            saveAppData();
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
