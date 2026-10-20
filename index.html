@@ -3,101 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Grid Buttons</title>
+    <title>simple grid · code to buttons</title>
     <style>
-        /* Centering the grid container on the screen */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            margin: 0;
-            padding: 0;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #f4f4f9;
-            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            font-family: system-ui, sans-serif;
+            padding: 1.5rem;
         }
-
-        /* Stacked grid structure */
+        .card {
+            background: #fff;
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem 1.8rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e4e9f0;
+        }
         .button-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Single column for stacked layout */
-            gap: 15px;                  /* Space between buttons */
+            grid-template-columns: 1fr;
+            gap: 12px;
             width: 100%;
-            max-width: 300px;           /* Controls the uniform width of the stack */
-            padding: 20px;
         }
-
-        /* Button Styling */
         .grid-btn {
             display: block;
             text-align: center;
             text-decoration: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #ffffff;
-            background-color: #007bff;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            padding: 12px 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: #2563eb;
+            border-radius: 10px;
+            transition: background-color 0.15s, transform 0.1s;
+            box-shadow: 0 3px 0 #1e40af;
+            border: 1px solid #3b82f6;
         }
+        .grid-btn:hover { background-color: #1d4ed8; }
+        .grid-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e40af; }
 
-        /* Hover and active effects */
-        .grid-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .grid-btn:active {
-            transform: scale(0.98);
-        }
+        /* hide the source code block — it's only for the JS to read */
+        #codeBlock { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- The container where JS will inject the buttons -->
+<div class="card">
+    <!-- Source data: hidden from view, only JS reads it -->
+    <pre id="codeBlock">
+      
+Home Page All services | index.html
+Markdown PDF Generator | mdpdf.html
+Assignment PDF Generator | assign.html
+
+</pre>
+
     <div id="gridContainer" class="button-grid"></div>
+</div>
 
-    <script>
-        /===========================================================
-         * CONFIGURATION: FORMATTED CODED WORDS (BUTTON DATA)
-         * Format: "Button Display Name | target_url_or_webpage.html"
-         ===========================================================/
-        const rawButtonData = `
+<script>
+(function () {
+    const raw = document.getElementById('codeBlock').textContent;
+    const container = document.getElementById('gridContainer');
 
-            Home Page All services     | index.html
-            Markdown PDF Generator     | mdpdf.html
-            Assignment PDF Generator   | assign.html
-  
-        `;
+    raw.split(/\r?\n/).forEach(line => {
+        const t = line.trim();
+        if (!t) return;
+        const i = t.indexOf('|');
+        if (i === -1) return;
 
-        // 1. Target the grid wrapper
-        const container = document.getElementById('gridContainer');
+        const label = t.slice(0, i).trim();
+        const url   = t.slice(i + 1).trim();
+        if (!label || !url) return;
 
-        // 2. Clean, split, and parse the raw configuration string line by line
-        rawButtonData
-            .trim()
-            .split('\n')
-            .forEach(line => {
-                // Skip completely empty lines
-                if (!line.trim()) return;
-
-                // Separate the text label from the destination webpage URL
-                const [label, url] = line.split('|');
-
-                if (label && url) {
-                    // Create an anchor link element
-                    const btn = document.createElement('a');
-                    
-                    // Assign properties and custom styles
-                    btn.textContent = label.trim();
-                    btn.href = url.trim();
-                    btn.className = 'grid-btn';
-
-                    // Append the button into our centered grid structure
-                    container.appendChild(btn);
-                }
-            });
-    </script>
+        const a = document.createElement('a');
+        a.textContent = label;
+        a.href = url;
+        a.className = 'grid-btn';
+        container.appendChild(a);
+    });
+})();
+</script>
 
 </body>
 </html>
