@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Markdown Editor</title>
+<style>
+/* =================================================================== */
+/* --- FINAL STYLES WITH LINE-BY-LINE EDITING --- */
+/* =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
+:root {
+    --background-color: #101010;
+    --surface-color: #1C1C1C;
+    --header-glass-color: rgba(28, 28, 28, 0.75);
+    --primary-text-color: #E0E0E0;
+    --secondary-text-color: #888888;
+    --accent-color: #FFFFFF;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --base-font-size: 62.5%;
+    --content-padding: 2rem;
+    --page-dark-bg: #1C1C1C;
+    --page-dark-text: #E0E0E0;
+    --page-light-bg: #FFFFFF;
+    --page-light-text: #222222;
+}
+
+html { font-size: var(--base-font-size); box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body { background-color: var(--background-color); color: var(--primary-text-color); font-family: 'Inter', sans-serif; margin: 0; }
+
+/* --- Header Styles --- */
+.app-header { position: sticky; top: 0; z-index: 1000; background-color: var(--header-glass-color); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 1rem var(--content-padding); display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.header-title { font-size: 1.6rem; font-weight: 500; color: var(--secondary-text-color); }
+.spacer { flex-grow: 1; }
+.control-group { display: flex; align-items: center; gap: 0.8rem; }
+.input-wrapper { display: flex; align-items: center; gap: 1rem; border: 1px solid var(--border-color); padding: 0.6rem 1rem; border-radius: 0.6rem; background-color: rgba(255, 255, 255, 0.05); }
+.control-group label { font-size: 1.3rem; color: var(--secondary-text-color); white-space: nowrap; }
+.control-group input { font-size: 1.3rem; padding: 0.6rem 0.8rem; border-radius: 0.6rem; border: 1px solid var(--border-color); background-color: transparent; color: var(--primary-text-color); }
+.control-group input[type="number"] { width: 6rem; }
+.control-group input[type="file"] { border: none; padding: 0; }
+.control-group input[type="file"]::file-selector-button { background-color: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); color: var(--primary-text-color); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; margin-right: 1rem; transition: background-color 0.2s; }
+.action-btn { font-size: 1.3rem; padding: 0.8rem 1.5rem; border-radius: 0.6rem; border: none; background-color: var(--accent-color); color: var(--background-color); font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+.action-btn:hover { transform: scale(1.05); }
+.action-btn.secondary { background-color: rgba(255, 255, 255, 0.1); color: var(--primary-text-color); }
+.action-btn.secondary:hover { background-color: rgba(255, 255, 255, 0.2); }
+.icon-btn { background: none; border: 1px solid var(--border-color); color: var(--primary-text-color); cursor: pointer; width: 3.2rem; height: 3.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; flex-shrink: 0; }
+.icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+/* --- Document Viewer --- */
+#viewer { width: 100%; max-width: 90rem; margin: 0 auto; box-sizing: border-box; font-size: var(--page-font-size, 12pt); padding: 3rem var(--page-padding, 8%); background-color: var(--page-dark-bg); color: var(--page-dark-text); transition: background-color 0.3s ease, color 0.3s ease; }
+#viewer.light-theme { background-color: var(--page-light-bg); color: var(--page-light-text); }
+.editable-line { cursor: pointer; transition: background-color 0.2s; border-radius: 4px; }
+.editable-line:hover { background-color: rgba(255, 255, 255, 0.05); }
+#viewer * { max-width: 100%; }
+#viewer pre, #viewer .katex-display { overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+#viewer pre { background-color: #101010; padding: 1.5em; margin: 1.5em 0; border-radius: 4px; }
+#viewer table { border-collapse: collapse; margin: 1.5em 0; }
+#viewer th, #viewer td { border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.8em 1em; text-align: left; }
+#viewer th { background-color: rgba(255, 255, 255, 0.05); font-weight: 600; }
+
+/* --- Pop-up Modal for Editing --- */
+.editor-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 2000; display: none; align-items: center; justify-content: center; }
+.editor-modal { background-color: var(--surface-color); color: var(--primary-text-color); border: 1px solid var(--border-color); border-radius: 8px; width: 90%; max-width: 80rem; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.modal-header { padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); font-size: 1.4rem; font-weight: 500; color: var(--secondary-text-color); }
+.modal-body { padding: 0; }
+#modal-editor { width: 100%; border: none; background-color: transparent; color: var(--primary-text-color); font-family: 'Fira Code', monospace; font-size: 1.4rem; padding: 2rem; resize: none; line-height: 1.6; }
+#modal-editor:focus { outline: none; }
+.modal-footer { padding: 1rem 2rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 1rem; }
+
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-katex-extension/lib/index.umd.js"></script>
+</head>
+<body>
+
+    <header id="app-header" class="app-header">
+        <div class="header-title">Precision Viewer</div>
+        <div class="spacer"></div>
+        <div class="control-group">
+            <div class="input-wrapper">
+                <label for="markdownFile">File</label>
+                <input type="file" id="markdownFile" accept=".md,.markdown,.txt">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="fontSize">Font</label>
+            <input type="number" id="fontSize" value="12" min="8" title="Font Size (pt)">
+        </div>
+        <div class="control-group">
+            <label for="padding">Padding</label>
+            <input type="number" id="padding" value="8" min="2" title="Page Padding (%)">
+        </div>
+        <div class="control-group">
+            <button id="exportBtn" class="action-btn">Export</button>
+        </div>
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Page Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        </button>
+    </header>
+
+    <main id="viewer"></main>
+
+    <div id="editor-modal-overlay" class="editor-modal-overlay">
+        <div class="editor-modal">
+            <div class="modal-header">Edit Line Source</div>
+            <div class="modal-body"><textarea id="modal-editor" rows="1"></textarea></div>
+            <div class="modal-footer">
+                <button id="modal-cancel-btn" class="action-btn secondary">Cancel</button>
+                <button id="modal-save-btn" class="action-btn">Save & Re-render</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    
+    // --- STATE VARIABLES ---
+    let markdownLines = [];
+    let currentlyEditingIndex = -1;
+
+    // --- ELEMENT SELECTORS ---
+    const viewer = document.getElementById('viewer');
+    const markdownFileInput = document.getElementById('markdownFile');
+    const fontSizeInput = document.getElementById('fontSize');
+    const paddingInput = document.getElementById('padding');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const exportBtn = document.getElementById('exportBtn');
+    const modalOverlay = document.getElementById('editor-modal-overlay');
+    const modalEditor = document.getElementById('modal-editor');
+    const modalSaveBtn = document.getElementById('modal-save-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+    // --- MARKED.JS CONFIGURATION ---
+    const markedInstance = new marked.Marked(
+        markedHighlight.markedHighlight({
+            langPrefix: 'hljs language-',
+            highlight(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            }
+        })
+    );
+    markedInstance.use(markedKatex({ throwOnError: false }));
+
+    // --- EVENT LISTENERS ---
+    markdownFileInput.addEventListener('change', handleFileSelect);
+    fontSizeInput.addEventListener('change', updateViewerStyles);
+    paddingInput.addEventListener('change', updateViewerStyles);
+    themeToggleBtn.addEventListener('click', () => viewer.classList.toggle('light-theme'));
+    exportBtn.addEventListener('click', openCleanView);
+    viewer.addEventListener('dblclick', handleEditClick);
+    modalSaveBtn.addEventListener('click', saveAndRenderLine);
+    modalCancelBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+    // Auto-resize textarea in modal
+    modalEditor.addEventListener('input', () => {
+        modalEditor.style.height = 'auto';
+        modalEditor.style.height = (modalEditor.scrollHeight) + 'px';
+    });
+
+    // --- CORE FUNCTIONS ---
+    function updateViewerStyles() {
+        viewer.style.setProperty('--page-font-size', `${fontSizeInput.value}pt`);
+        viewer.style.setProperty('--page-padding', `${paddingInput.value}%`);
+    }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            renderFullDocument(e.target.result);
+        };
+        reader.readAsText(file);
+    }
+
+    function renderFullDocument(fullMarkdown) {
+        viewer.innerHTML = '';
+        markdownLines = fullMarkdown.split(/\r?\n/);
+
+        markdownLines.forEach((line, index) => {
+            // Render each line. If it's empty, render a non-breaking space to make it clickable.
+            const html = line.trim() === '' ? '&nbsp;' : markedInstance.parse(line);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'editable-line';
+            wrapper.dataset.lineIndex = index;
+            wrapper.innerHTML = html;
+            viewer.appendChild(wrapper);
+        });
+        updateViewerStyles();
+    }
+
+    function handleEditClick(event) {
+        const targetLine = event.target.closest('.editable-line');
+        if (!targetLine) return;
+
+        currentlyEditingIndex = parseInt(targetLine.dataset.lineIndex, 10);
+        const originalMarkdown = markdownLines[currentlyEditingIndex];
+        
+        modalEditor.value = originalMarkdown;
+        modalOverlay.style.display = 'flex';
+        modalEditor.focus();
+        // Trigger auto-resize on open
+        modalEditor.dispatchEvent(new Event('input'));
+    }
+
+    function saveAndRenderLine() {
+        if (currentlyEditingIndex === -1) return;
+
+        const newLine = modalEditor.value;
+        markdownLines[currentlyEditingIndex] = newLine; // Update the source array
+
+        const newHtml = newLine.trim() === '' ? '&nbsp;' : markedInstance.parse(newLine);
+        const lineToUpdate = viewer.querySelector(`[data-line-index="${currentlyEditingIndex}"]`);
+        
+        if (lineToUpdate) {
+            lineToUpdate.innerHTML = newHtml;
+        }
+        
+        closeModal();
+    }
+
+    function closeModal() {
+        modalOverlay.style.display = 'none';
+        currentlyEditingIndex = -1;
+    }
+
+    function openCleanView() {
+        const fullMarkdown = markdownLines.join('\n');
+        if (!fullMarkdown.trim()) { alert("There is no content to export."); return; }
+
+        const currentFontSize = fontSizeInput.value;
+        const currentPadding = paddingInput.value;
+        const cleanHtmlContent = markedInstance.parse(fullMarkdown);
+        
+        const printableHtml = `<div class="printable-area">${cleanHtmlContent}</div>`;
+        const cleanCss = `
+            body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; background-color: #fff; font-size: ${currentFontSize}pt; overflow-wrap: break-word; }
+            .printable-area { margin: 0 auto; } h1, h2, h3, h4, h5, h6 { line-height: 1.2; } img { max-width: 100%; }
+            table { width: 100%; border-collapse: collapse; margin: 1.5em 0; }
+            th, td { border: 1px solid #ddd; padding: 0.8em 1em; text-align: left; } th { background-color: #f6f8fa; }
+            pre { white-space: pre-wrap; word-break: break-all; background-color: #f6f8fa; padding: 1em; border-radius: 4px; }
+            .katex-display { overflow-x: auto; word-break: break-all; }
+        `;
+        const newHtml = `
+            <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Export Preview</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+                ${cleanCss}
+                @media print {
+                    @page { size: A4; margin: 2cm ${currentPadding}%; }
+                    html, body { width: 100%; height: auto; margin: 0; padding: 0; font-size: ${currentFontSize}pt; color: #000; background-color: #fff; }
+                    .printable-area { width: auto; max-width: 100%; margin: 0; padding: 0; }
+                    a, table, tr, td, th, pre, img, figure { page-break-inside: avoid !important; }
+                    thead { display: table-header-group; }
+                }
+            </style></head><body>${printableHtml}</body></html>`;
+        const newTab = window.open();
+        newTab.document.open();
+        newTab.document.write(newHtml);
+        newTab.document.close();
+    }
+
+    // Initial placeholder render
+    renderFullDocument("# Welcome!\n\nThis is a line-by-line Markdown editor.\n\n- Double-click any line to edit its source.\n- Load a file to begin.");
+});
+    </script>
+</body>
+</html>
