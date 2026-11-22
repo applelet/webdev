@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="All your services at one place">
     <title>All Services at One Place</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -48,16 +56,14 @@
         .grid-btn:hover { background-color: #1d4ed8; }
         .grid-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e40af; }
 
-        /* hide the source code block — it's only for the JS to read */
         #codeBlock { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <!-- Source data: hidden from view, only JS reads it -->
     <pre id="codeBlock">
-      
+
 Home Page All services | index.html
 Markdown PDF Generator | mdpdf.html
 Markdown HTML Generator | mdhtml.html
@@ -90,6 +96,15 @@ Assignment PDF Generator | assign.html
         container.appendChild(a);
     });
 })();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .catch(err => console.log('SW registration failed:', err));
+    });
+  }
 </script>
 
 </body>
